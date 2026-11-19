@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABP - Exercici integral de disseny de màquines</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- 3D library: Three.js (ES modules, resolved through this import map) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <!-- 2D library: Two.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.14/two.min.js"></script>
+</head>
+<body>
+  <aside id="sidebar">
+    <header>
+      <h1 data-i18n="title">Shaft assembly</h1>
+      <p id="subtitle">4 kW, 800 rpm, bearings A (located) and C (floating), helical gear B, V-belt pulley D</p>
+    </header>
+
+    <div class="toolbar">
+      <!-- icon buttons; main.js draws the icons and sets the tooltips -->
+      <button id="btnPlay" type="button" class="icon-btn" aria-pressed="true"></button>
+      <button id="btnExpand" type="button" class="icon-btn"></button>
+      <button id="btnReset" type="button" class="icon-btn" data-i18n-title="resetAll" data-i18n-label="resetAll"></button>
+    </div>
+
+    <div id="components"></div>
+  </aside>
+
+  <main>
+    <!-- always visible, whichever tab is open -->
+    <section id="loads">
+      <h2><span data-i18n="loadsTitle">Loads</span> <small data-i18n="loadsSub">from current sizes</small></h2>
+      <div id="loadsList"></div>
+      <h2 class="checks-title"><span data-i18n="checksTitle">Design checks</span> <small id="checksCount"></small></h2>
+      <div id="checksList"></div>
+    </section>
+
+    <div id="content">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tabBtnVisual" aria-controls="tabVisual" aria-selected="true" data-i18n="tabVisual">Visual</button>
+        <button type="button" role="tab" id="tabBtnCalc" aria-controls="tabCalc" aria-selected="false" data-i18n="tabCalc">Calculations</button>
+
+        <div class="tools">
+          <button type="button" id="btnVars" class="theme-btn panel-btn" aria-pressed="true" data-i18n="panelVars">Variables</button>
+          <button type="button" id="btnLoads" class="theme-btn panel-btn" aria-pressed="true" data-i18n="panelLoads">Loads and checks</button>
+          <button type="button" id="btnTheme" class="theme-btn" aria-pressed="false">Dark</button>
+        </div>
+        <div class="langs" role="group" aria-label="Language">
+          <button type="button" data-lang="en" title="English" aria-label="English" aria-pressed="true">
+            <svg viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <clipPath id="ukS"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+              <clipPath id="ukT"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+              <g clip-path="url(#ukS)">
+                <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukT)" stroke="#c8102e" stroke-width="4"/>
+                <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+              </g>
+            </svg>
+          </button>
+          <button type="button" data-lang="es" title="Español" aria-label="Español" aria-pressed="false">
+            <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/></svg>
+          </button>
+          <button type="button" data-lang="ca" title="Català" aria-label="Català" aria-pressed="false">
+            <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fcdd09"/><g fill="#da121a"><rect y="2.22" width="30" height="2.22"/><rect y="6.67" width="30" height="2.22"/><rect y="11.11" width="30" height="2.22"/><rect y="15.56" width="30" height="2.22"/></g></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tabVisual" role="tabpanel" aria-labelledby="tabBtnVisual">
+        <!-- options that only change what the two views draw -->
+        <div class="view-opts">
+          <label><input type="checkbox" id="optForces" checked> <span data-i18n="forces">Forces</span></label>
+          <label><input type="checkbox" id="optLabels" checked> <span data-i18n="labels">Labels</span></label>
+        </div>
+        <section class="pane" id="pane3d">
+          <span class="pane-title"><span data-i18n="view3d">3D view</span> <small data-i18n="hint3d">drag to orbit, wheel to zoom, right-drag to pan</small></span>
+          <div id="view3d"></div>
+          <div id="msg3d" hidden></div>
+        </section>
+        <section class="pane" id="pane2d">
+          <span class="pane-title"><span data-i18n="view2d">2D views</span> <small data-i18n="hint2d">side view (x–y) and pulley end view (z–y)</small></span>
+          <div id="view2d"></div>
+        </section>
+      </div>
+
+      <div class="tab-panel" id="tabCalc" role="tabpanel" aria-labelledby="tabBtnCalc" hidden>
+        <div id="calcList"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="equations.js"></script>
+  <script src="tables.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
