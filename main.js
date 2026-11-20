@@ -30,7 +30,7 @@
   }
   function saveState() {
     // the theme is stored only once the user has picked one; until then the system setting decides
-    const json = JSON.stringify({ lang, theme: themeChosen ? theme : undefined, P, visible, opts, locked });
+    const json = JSON.stringify({ lang, theme: themeChosen ? theme : undefined, P, visible, opts, locked, speed: animSpeed });
     try { localStorage.setItem(STORE_KEY, json); } catch (e) { /* storage unavailable */ }
   }
   const saved = readState() || {};
@@ -43,7 +43,7 @@
   const PALETTES = {
     light: {
       ink: '#2b3138', dim: '#3d444d', muted: '#6b7480', paper: '#ffffff', line: '#d9dde2', sceneBg: '#f1f2f4',
-      select: '#2f6fc4', force: '#b5463c', valid: '#6a9f7c', invalid: '#e6cfcb',
+      select: '#2f6fc4', edge: '#22272d', force: '#b5463c', valid: '#6a9f7c', invalid: '#e6cfcb',
       steel: '#dfe3e7', steel2: '#d2d7dc', steel3: '#c5cbd1', ring: '#cfdae4', ball: '#f1f3f5', chrome: '#e3e6e9',
       belt: '#4d5257', belt3d: '#3f4347', beltMark: '#a9afb6', hole: '#2a2d31',
       comp: { given: '#7a8794', drive: '#5b7fa6', shaft: '#8b949e', bearingA: '#5c85ad', pinion: '#b0705f', gear: '#b8904f',
@@ -53,7 +53,7 @@
     },
     dark: {
       ink: '#d7dce2', dim: '#b4bcc5', muted: '#98a2ad', paper: '#1e2125', line: '#3a4048', sceneBg: '#1a1c20',
-      select: '#7fb4f5', force: '#d9796f', valid: '#6fae86', invalid: '#5a3b38',
+      select: '#7fb4f5', edge: '#08090b', force: '#d9796f', valid: '#6fae86', invalid: '#5a3b38',
       steel: '#4a5057', steel2: '#555c64', steel3: '#616973', ring: '#42566a', ball: '#6c747d', chrome: '#9aa2ab',
       belt: '#9aa1a8', belt3d: '#6d747c', beltMark: '#c2c8ce', hole: '#111315',
       comp: { given: '#9aa6b2', drive: '#7d9dc0', shaft: '#9aa3ad', bearingA: '#7ba0c4', pinion: '#c58d7d', gear: '#cdaa6e',
@@ -87,6 +87,7 @@
     animOff:    ['Animation paused', 'Animación en pausa', 'Animació en pausa'],
     forces:     ['Forces', 'Fuerzas', 'Forces'],
     labels:     ['Labels', 'Etiquetas', 'Etiquetes'],
+    edges:      ['Edges', 'Aristas', 'Arestes'],
     pinion:     ['Pinion', 'Piñón', 'Pinyó'],
     pulleyD:    ['Pulley D', 'Polea D', 'Politja D'],
     drivenPulley: ['Driven pulley', 'Polea conducida', 'Politja conduïda'],
@@ -231,6 +232,8 @@
                  'Fixa almenys una variable (la xinxeta del costat) per veure els càlculs. Mentre tots els valors siguin lliures, només es mostren les comprovacions de disseny.'],
     whyNone:    ['no value passes all of these checks at once:', 'ningún valor cumple todas estas comprobaciones a la vez:', 'cap valor compleix totes aquestes comprovacions alhora:'],
     whyOut:     ['outside its valid range because of these checks:', 'fuera de su rango válido por estas comprobaciones:', 'fora del seu rang vàlid per aquestes comprovacions:'],
+    copyLatex:  ['Copy this equation as LaTeX', 'Copiar esta ecuación como LaTeX', 'Copia aquesta equació com a LaTeX'],
+    animSpeed:  ['Animation speed', 'Velocidad de la animación', "Velocitat de l'animació"],
     whyRule:    ['Why this rule?', '¿Por qué esta regla?', 'Per què aquesta regla?'],
     whyNeeds:   ['needs {r}', 'necesita {r}', 'necessita {r}'],
     whyNow:     ['Now:', 'Ahora:', 'Ara:'],
@@ -355,8 +358,9 @@
 
   const SCHEMA = [
     { id: 'drive', noToggle: true, params: [
-      { key: 'kW', min: 0.5, max: 50,   step: 0.1, def: 4 },
-      { key: 'n',  min: 50,  max: 3000, step: 10,  def: 800 },
+      // the range is chosen so that the statement's 4 kW sits a quarter of the way along the slider
+      { key: 'kW', min: 0.5, max: 14.5, step: 0.1, def: 4 },
+      { key: 'n',  min: 50,  max: 3000, step: 10,  def: 1500 },   // the statement gives 800 rpm
       { key: 'peak', min: 1, max: 5,    step: 0.1, def: 2.5 },
     ]},
     { id: 'shaft', params: [
@@ -452,13 +456,20 @@
     expand:   svgIcon('', '<path d="M7 4l5 5 5-5"/><path d="M7 13l5 5 5-5"/>'),
     collapse: svgIcon('', '<path d="M7 11l5-5 5 5"/><path d="M7 20l5-5 5 5"/>'),
     info:   svgIcon('', '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),
+    copy:   svgIcon('', '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>'),
+    check:  svgIcon('', '<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
     moon:   svgIcon('', '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>'),
   };
 
   const P = {};        // P[componentId][paramKey] = value
   const visible = {};  // visible[componentId] = bool
-  const opts = { spin: true, forces: true, labels: true, showVars: true, showLoads: true };
+  const opts = { spin: true, forces: true, labels: true, edges: true, showVars: true, showLoads: true };
   const colorOf = {};
+  // animation speed, 0.1 to 1 in steps of 0.1 (1 is the full pace); half pace unless one was saved
+  const ANIM_SPEED_DEFAULT = 0.5;
+  let animSpeed = Number(saved.speed);
+  if (!(animSpeed >= 0.1 && animSpeed <= 1)) animSpeed = ANIM_SPEED_DEFAULT;
+  animSpeed = Math.round(animSpeed * 10) / 10;
 
   SCHEMA.forEach(c => {
     P[c.id] = {};
@@ -504,6 +515,7 @@
       ra: g.d / 2 + m,
       rf: Math.max(g.d / 2 - 1.25 * m, g.d * 0.25),
       beta: g.beta * Math.PI / 180,
+      phi: g.phi * Math.PI / 180,                       // transverse pressure angle: slope of the tooth flanks
     };
 
     // Pinion: meshes with B from above, same module, opposite helix hand
@@ -513,6 +525,7 @@
       ra: pr + m,
       rf: Math.max(pr - 1.25 * m, pr * 0.4),
       beta: -gear.beta,
+      phi: gear.phi,
       yc: gear.r + pr,
     };
 
@@ -718,6 +731,8 @@
     $('#btnReset').innerHTML = ICON.reset;
     $('#btnReset').addEventListener('click', () => {
       SCHEMA.forEach(c => c.params.forEach(p => { if (!locked[c.id][p.key]) P[c.id][p.key] = p.def; }));
+      animSpeed = ANIM_SPEED_DEFAULT;
+      $('#selSpeed').value = String(animSpeed);
       syncInputs();
       refresh();
     });
@@ -726,12 +741,21 @@
     if (systemDark && systemDark.addEventListener) {
       systemDark.addEventListener('change', e => { if (!themeChosen) setTheme(e.matches ? 'dark' : 'light'); });
     }
+    const speedSel = $('#selSpeed');
+    for (let i = 1; i <= 10; i++) {
+      const o = document.createElement('option');
+      o.value = String(i / 10);
+      o.textContent = (i / 10).toFixed(1) + ' ×';
+      speedSel.appendChild(o);
+    }
+    speedSel.value = String(animSpeed);
+    speedSel.addEventListener('change', () => { animSpeed = Number(speedSel.value); saveState(); });
     $('#btnPlay').addEventListener('click', () => {
       opts.spin = !opts.spin;
       updatePlayButton();
       refresh();
     });
-    [['#optForces', 'forces'], ['#optLabels', 'labels']].forEach(([sel, key]) => {
+    [['#optForces', 'forces'], ['#optLabels', 'labels'], ['#optEdges', 'edges']].forEach(([sel, key]) => {
       $(sel).checked = opts[key];
       $(sel).addEventListener('change', e => { opts[key] = e.target.checked; refresh(); });
     });
@@ -893,13 +917,65 @@
     return unknown ? null : out;
   }
 
+  // ---- LaTeX ----
+  // One piece of a formula (text with <sub>/<sup> tags) as LaTeX: tags become _{ } and ^{ }, the special
+  // characters become commands, and words and units go inside \text{ }.
+  const TEX_CHAR = {
+    '×': '\\times ', '−': '-', '≤': '\\le ', '≥': '\\ge ', '≈': '\\approx ', '→': '\\rightarrow ', '⇒': '\\Rightarrow ',
+    'π': '\\pi ', 'ω': '\\omega ', 'φ': '\\varphi ', 'β': '\\beta ', 'σ': '\\sigma ', 'τ': '\\tau ', 'θ': '\\theta ',
+    'ψ': '\\psi ', 'Δ': '\\Delta ', '′': "'", '°': '^{\\circ}', '%': '\\%', '²': '^{2}', '³': '^{3}', '√': '\\sqrt{}',
+    '{': '\\{', '}': '\\}', ' ': '\\,', '«': '\\text{«}', '»': '\\text{»}', '&': '\\&', '#': '\\#', '_': '\\_',
+  };
+  const TEX_FUNC = { tan: 1, sin: 1, cos: 1, max: 1, min: 1, log: 1, exp: 1 };
+  function texText(str) {
+    return str.replace(/<su([bp])>([\s\S]*?)<\/su[bp]>|<[^>]+>|([^<]+)/g, (m, kind, inner, plain) => {
+      if (kind) return (kind === 'b' ? '_{' : '^{') + texText(inner) + '}';
+      if (plain == null) return '';
+      return plain
+        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+        .replace(/[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?: [A-Za-zÀ-ÖØ-öø-ÿ]{2,})*|[^A-Za-zÀ-ÖØ-öø-ÿ]/g, w =>
+          (w.length > 1 ? (TEX_FUNC[w] ? '\\' + w + ' ' : `\\text{${w}}`) : TEX_CHAR[w] != null ? TEX_CHAR[w] : w));
+    });
+  }
+  const toLatex = html => stackFractions(html || '', true)
+    .replace(/ {2,}/g, ' ').replace(/ ,/g, ',')
+    .replace(/(\d) (?=\\text\{|[A-Za-z])/g, '$1\\,')                     // a thin space between a number and its unit
+    .replace(/\\,([NWJmsh])(?![A-Za-z_^{])/g, '\\,\\mathrm{$1}')         // one-letter units upright
+    .replace(/\\mathrm\{N\} (m|\\text\{mm\})/g, (m, u) => `\\mathrm{N\\,${u === 'm' ? 'm' : 'mm'}}`)
+    .trim();
+  // latexOf['step-3'] or latexOf['check-face']: the LaTeX the copy button of that equation puts on the clipboard
+  let latexOf = {};
+  function copyLatex(btn) {
+    const tex = latexOf[btn.dataset.eq];
+    if (!tex) return;
+    const done = () => {
+      btn.classList.add('done');
+      btn.innerHTML = ICON.check;
+      setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = ICON.copy; }, 1300);
+    };
+    const fallback = () => {                       // older browsers, or a page not served over https
+      const ta = document.createElement('textarea');
+      ta.value = tex;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { /* nothing more to try */ }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tex).then(done, fallback);
+    else fallback();
+  }
+  const copyButton = id =>
+    `<button type="button" class="copy-eq" data-eq="${id}" title="${t('copyLatex')}" aria-label="${t('copyLatex')}">${ICON.copy}</button>`;
+
   // ---- equations written the way they are written by hand: a / b becomes a stacked fraction ----
   // The formulas of this file are plain HTML strings such as "2 × T / d<sub>B</sub>". stackFractions()
   // reads one and rebuilds every " / " (with spaces; units like ft/min are left alone) as a fraction:
   // the numerator is everything before it in the same term, the denominator what follows up to the
   // next × or the end of the term. Terms end at + − = ≤ ≥ < > , ; : and at the enclosing bracket.
-  function stackFractions(html) {
-    if (html.indexOf(' / ') < 0) return html;
+  function stackFractions(html, latex) {
+    if (!latex && html.indexOf(' / ') < 0) return html;
     // 1. tokens
     const toks = [];
     const TAG = /<button[^>]*>[\s\S]*?<\/button>|<su[bp]>[\s\S]*?<\/su[bp]>|<\/?[a-zA-Z][^>]*>/g;
@@ -949,10 +1025,29 @@
       while (b > a && list[b - 1].t === 'sp') b--;
       return list.slice(a, b);
     };
-    const one = n => (n.t === 'grp' ? n.o + seq(n.kids) + n.c : n.t === 'html' ? n.v : n.v || '');
+    const one = n => {
+      if (n.t === 'html') return n.v;
+      if (n.t === 'grp') {
+        if (!latex) return n.o + seq(n.kids) + n.c;
+        return n.o === '|' ? `\\left| ${seq(n.kids)} \\right|` : `\\left( ${seq(n.kids)} \\right)`;
+      }
+      return latex ? texText(n.v || '') : n.v || '';
+    };
+    // a list of nodes; in LaTeX a root sign takes the bracket that follows it
+    const run = list => {
+      let out = '';
+      for (let i = 0; i < list.length; i++) {
+        const n = list[i], nx = list[i + 1];
+        if (latex && n.t === 'txt' && /√$/.test(n.v) && nx && nx.t === 'grp' && nx.o === '(') {
+          out += texText(n.v.slice(0, -1)) + `\\sqrt{${seq(nx.kids)}}`;
+          i++;
+        } else out += one(n);
+      }
+      return out;
+    };
     const side = list => {                       // numerator or denominator: a lone (bracket) loses its brackets
       const l = trim(list);
-      return l.length === 1 && l[0].t === 'grp' && l[0].o === '(' ? seq(l[0].kids) : l.map(one).join('');
+      return l.length === 1 && l[0].t === 'grp' && l[0].o === '(' ? seq(l[0].kids) : run(l);
     };
     const term = items => {
       for (;;) {
@@ -963,16 +1058,17 @@
         const num = items.slice(0, i), den = items.slice(i + 1, j);
         const lead = [];                          // keep the spaces in front of the fraction
         while (num.length && num[0].t === 'sp') lead.push(num.shift());
-        const frac = { t: 'html', v: `<span class="frac"><span class="fnum">${side(num)}</span><span class="fden">${side(den)}</span></span>` };
+        const frac = { t: 'html', v: latex ? `\\frac{${side(num)}}{${side(den)}}`
+          : `<span class="frac"><span class="fnum">${side(num)}</span><span class="fden">${side(den)}</span></span>` };
         const tail = den.length && den[den.length - 1].t === 'sp' ? [{ t: 'sp', v: ' ' }] : [];
         items = lead.concat([frac], tail, items.slice(j));
       }
-      return items.map(one).join('');
+      return run(items);
     };
     function seq(nodes) {
       let out = '', cur = [];
       nodes.forEach(n => {
-        if (n.t === 'sep') { out += term(cur) + n.v; cur = []; } else cur.push(n);
+        if (n.t === 'sep') { out += term(cur) + (latex ? texText(n.v) : n.v); cur = []; } else cur.push(n);
       });
       return out + term(cur);
     }
@@ -1304,6 +1400,7 @@
   }
 
   function updateCalc(g) {
+    latexOf = {};
     const steps = calcSteps(g);
     readSymDefs(anyLocked() ? steps : []);
     // The steps are worked with the fixed values as their starting point, so they are only shown once
@@ -1314,10 +1411,12 @@
     }
     $('#calcList').innerHTML = steps.map((st, k) => {
       const why = T['cv' + k] ? t('cv' + k) : '';
+      latexOf['step-' + k] = toLatex(st.f) + (st.s ? ' = ' + toLatex(st.s) : '') + ' \\;\\Rightarrow\\; ' + toLatex(st.r);
       return `
       <div class="calc-step" id="step-${k}">
         <div class="num">${k + 1}</div>
         <h3>${t('ct' + k)}</h3>
+        ${copyButton('step-' + k)}
         <div class="work">
           <div class="formula">${stackFractions(linkSymbols(st.f, null, k))}</div>
           ${st.s ? `<div class="subst">= ${stackFractions(st.s)}</div>` : ''}
@@ -1332,6 +1431,16 @@
   // ------------------------------------------------------------------
   // 2D views (Two.js)
   // ------------------------------------------------------------------
+  // How a force arrow shows its size: mostly by its thickness, a little by its length.
+  // The thickness follows the square root of the force: 1.2 times the base size for the tangential force
+  // of the statement's 4 kW (637 N), held between 0.5 and 3 times. The base sizes are ARROW_2D (line width
+  // in pixels) and ARROW_3D (shaft radius as a share of the largest radius of the model).
+  const FORCE_REF = 637, ARROW_2D = 3.6, ARROW_3D = 0.035;
+  function forceLook(F) {
+    const k = Math.max(1e-6, F) / FORCE_REF;
+    return { thick: Math.max(0.5, Math.min(3, 1.2 * Math.sqrt(k))), long: Math.max(0.8, Math.min(1.35, Math.pow(k, 0.12))) };
+  }
+
   let two = null;
   let INK = C.ink;         // both follow the theme: see setTheme()
   let FORCE = C.force;
@@ -1397,7 +1506,7 @@
     const arrow = (x1, y1, x2, y2, color, lw) => {
       color = color || FORCE;
       line(x1, y1, x2, y2, color, lw || 2);
-      const ang = Math.atan2(y2 - y1, x2 - x1), h = 9;
+      const ang = Math.atan2(y2 - y1, x2 - x1), h = 9 + Math.max(0, (lw || 2) - 2) * 1.6;   // a thicker arrow has a bigger head
       poly([
         [x2, y2],
         [x2 - h * Math.cos(ang - 0.35), y2 - h * Math.sin(ang - 0.35)],
@@ -1530,12 +1639,14 @@
       const px = X(g.xB), py = Y(pin ? gear.r : gear.ra);
       const L = pin ? (g.pinion.yc + g.pinion.ra - gear.r) * s + 26 : 42;
       const La = pin ? Math.max(g.pinion.w, gear.w) * s / 2 + 34 : 54;
-      arrow(px, py - L, px, py, FORCE);
-      text('Fr', px + 13, py - L + 4, 13, FORCE, true);
-      arrow(px - La, py, px - 4, py, FORCE);
-      text('Fa', px - La + 10, py - 10, 13, FORCE, true);
-      style(two.makeCircle(px, py, 5.5), C.paper, FORCE, 1.6);        // Ft: out of the page (+z)
-      style(two.makeCircle(px, py, 1.6), FORCE, FORCE, 1);
+      const kr = forceLook(g.loads.Fr), ka = forceLook(g.loads.Fa), kt = forceLook(g.loads.Ft);
+      const Lr = L * kr.long, Lax = La * ka.long;
+      arrow(px, py - Lr, px, py, FORCE, ARROW_2D * kr.thick);
+      text('Fr', px + 13, py - Lr + 4, 13, FORCE, true);
+      arrow(px - Lax, py, px - 4, py, FORCE, ARROW_2D * ka.thick);
+      text('Fa', px - Lax + 10, py - 10, 13, FORCE, true);
+      style(two.makeCircle(px, py, 4 + 1.5 * kt.thick), C.paper, FORCE, 1.6 * kt.thick);   // Ft: out of the page (+z)
+      style(two.makeCircle(px, py, 1.2 + 0.4 * kt.thick), FORCE, FORCE, 1);
       text('Ft', px - 15, py - 14, 13, FORCE, true);
     }
 
@@ -1617,11 +1728,12 @@
     }
     part = null;
     if (opts.forces && pulls && visible.pulley) {
-      const [f2, f1] = pulls, L = 40;
-      arrow(f2[0], f2[1], f2[0] + f2[2] * L, f2[1] + f2[3] * L, FORCE);
-      text('F2', f2[0] + f2[2] * L * 0.5, f2[1] + f2[3] * L * 0.5 - 13, 13, FORCE, true);
-      arrow(f1[0], f1[1], f1[0] + f1[2] * L, f1[1] + f1[3] * L, FORCE);
-      text('F1', f1[0] + f1[2] * L * 0.5, f1[1] + f1[3] * L * 0.5 + 17, 13, FORCE, true);
+      const [f2, f1] = pulls, k1 = forceLook(g.loads.F1), k2 = forceLook(g.loads.F2);
+      const L2 = 40 * k2.long, L1 = 40 * k1.long;
+      arrow(f2[0], f2[1], f2[0] + f2[2] * L2, f2[1] + f2[3] * L2, FORCE, ARROW_2D * k2.thick);
+      text('F2', f2[0] + f2[2] * L2 * 0.5, f2[1] + f2[3] * L2 * 0.5 - 13, 13, FORCE, true);
+      arrow(f1[0], f1[1], f1[0] + f1[2] * L1, f1[1] + f1[3] * L1, FORCE, ARROW_2D * k1.thick);
+      text('F1', f1[0] + f1[2] * L1 * 0.5, f1[1] + f1[3] * L1 * 0.5 + 17, 13, FORCE, true);
     }
     if (visible.shaft) {
       part = 'shaft';
@@ -1692,6 +1804,24 @@
     // left drag orbits, wheel zooms, middle or right drag pans
     controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
     const canvas = renderer.domElement;
+
+    // Zoom. A mouse wheel sends a few large steps (about 100 per notch); a touchpad sends a stream of very
+    // small ones (two-finger scroll), or small ones with ctrlKey set (pinch). The same gain cannot suit both,
+    // so the wheel is handled here: the distance to the orbit centre is scaled by the amount scrolled, with
+    // a larger gain for the touchpad.
+    controls.enableZoom = false;
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const px = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 300 : 1);   // lines or pages, as pixels
+      if (!px) return;
+      const mouse = e.deltaMode !== 0 || (!e.ctrlKey && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 50);
+      // per pixel scrolled: a touchpad scroll gets 5 times the mouse gain, a pinch more still
+      const gain = mouse ? 0.0011 : e.ctrlKey ? 0.02 : 0.0055;
+      const factor = Math.exp(Math.max(-0.5, Math.min(0.5, px * gain)));
+      const offset = camera.position.clone().sub(controls.target);
+      const dist = Math.max(15, Math.min(8000, offset.length() * factor));
+      camera.position.copy(controls.target).add(offset.setLength(dist));
+    }, { passive: false });
     canvas.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });   // no browser auto-scroll
 
     // the component a mesh belongs to: its own tag, or the tag of the mesh it is attached to
@@ -1771,9 +1901,33 @@
     function helicalGear(gr) {
       const pitch = 2 * Math.PI / gr.z;
       const prof = [];
+      // Involute teeth. Two involute gears with the same module and pressure angle roll on each other
+      // without their flanks ever crossing, whatever their sizes, so the meshing teeth touch and do not
+      // sink into one another. Half the tooth thickness, as an angle, at radius R is
+      //   psi(R) = pi / (2 z) + inv(phi) - inv(alpha_R) ,  cos(alpha_R) = r_base / R ,  inv(a) = tan(a) - a
+      // (half a pitch thick at the pitch circle, so there is no backlash). Below the base circle, where
+      // there is no involute, the flank goes straight down a radius.
+      const phi = gr.phi || 0, rb = gr.r * Math.cos(phi);
+      const inv = a => Math.tan(a) - a;
+      const psi = R => {
+        const half = Math.PI / (2 * gr.z) + inv(phi) - (R > rb ? inv(Math.acos(rb / R)) : 0);
+        return Math.min(half, 0.98 * Math.PI / gr.z);
+      };
+      // a tooth so pointed that its flanks meet below the tip circle ends where they meet
+      let rTip = gr.ra;
+      if (psi(rTip) < 0.004) {
+        let lo = gr.r, hi = gr.ra;
+        for (let it = 0; it < 30; it++) { const mid = (lo + hi) / 2; if (psi(mid) > 0.004) lo = mid; else hi = mid; }
+        rTip = lo;
+      }
+      const STEPS = 7, radii = [];
+      for (let q = 0; q <= STEPS; q++) radii.push(gr.rf + (rTip - gr.rf) * q / STEPS);
+      if (rb > gr.rf && rb < rTip) { radii.push(rb); radii.sort((a, b) => a - b); }    // keep the corner at the base circle
+      const perTooth = 2 * radii.length;
       for (let i = 0; i < gr.z; i++) {
-        [[gr.rf, 0], [gr.rf, 0.2], [gr.ra, 0.4], [gr.ra, 0.6], [gr.rf, 0.8]]
-          .forEach(q => prof.push([q[0], (i + q[1]) * pitch]));
+        const c = (i + 0.5) * pitch;                                                       // tooth centre
+        radii.forEach(R => prof.push([R, c - psi(R)]));                                    // up one flank
+        radii.slice().reverse().forEach(R => prof.push([R, c + psi(R)]));                  // down the other
       }
       const n = prof.length, slices = 14;
       const twist = gr.w * Math.tan(gr.beta) / gr.r;
@@ -1796,6 +1950,22 @@
       geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
       geo.computeVertexNormals();
       geo.rotateX(-Math.PI / 2);
+
+      // Outline of the gear, built by hand: finding edges automatically also marks the triangles the flat
+      // end faces are made of. It is the profile at both ends plus, along the face, the two tip corners and
+      // the two root corners of each tooth.
+      const line = [];
+      [0, slices].forEach(k => { for (let i = 0; i < n; i++) line.push(...pt(i, k), ...pt(i + 1, k)); });
+      for (let tooth = 0; tooth < gr.z; tooth++) {
+        [0, perTooth / 2 - 1, perTooth / 2, perTooth - 1].forEach(c => {
+          const i = tooth * perTooth + c;
+          for (let k = 0; k < slices; k++) line.push(...pt(i, k), ...pt(i, k + 1));
+        });
+      }
+      const edges = new THREE.BufferGeometry();
+      edges.setAttribute('position', new THREE.Float32BufferAttribute(line, 3));
+      edges.rotateX(-Math.PI / 2);
+      geo.userData.outline = edges;
       return geo;
     }
 
@@ -1821,7 +1991,10 @@
 
     function clear(group) {
       group.traverse(o => {
-        if (o.geometry) o.geometry.dispose();
+        if (o.geometry) {
+          if (o.geometry.userData.outline) o.geometry.userData.outline.dispose();
+          o.geometry.dispose();
+        }
         if (o.material) {
           if (o.material.map) o.material.map.dispose();
           o.material.dispose();
@@ -1963,10 +2136,22 @@
 
       // ---- overlay (world coordinates: x axis = shaft) ----
       const V = (x, y, z) => new THREE.Vector3(x, y, z);
-      const arrow3 = (dir, tip, len, color, name) => {
+      const arrow3 = (dir, tip, len, color, name, force) => {
         const d = dir.clone().normalize();
+        const look = forceLook(force);
+        len *= look.long;
         const origin = tip.clone().addScaledVector(d, -len);
-        overlay.add(new THREE.ArrowHelper(d, origin, len, color, len * 0.28, len * 0.13));
+        // a round shaft and a cone head, so the arrow can be as thick as the force is large
+        const rad = g.Rmax * ARROW_3D * look.thick, head = Math.min(len * 0.45, rad * 7);
+        const m = new THREE.MeshBasicMaterial({ color });
+        const turn = new THREE.Quaternion().setFromUnitVectors(V(0, 1, 0), d);
+        const shaftMesh = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, len - head, 16), m);
+        shaftMesh.position.copy(origin).addScaledVector(d, (len - head) / 2);
+        shaftMesh.quaternion.copy(turn);
+        const headMesh = new THREE.Mesh(new THREE.ConeGeometry(rad * 2.6, head, 20), m);
+        headMesh.position.copy(tip).addScaledVector(d, -head / 2);
+        headMesh.quaternion.copy(turn);
+        overlay.add(shaftMesh, headMesh);
         if (name && opts.labels) {
           const sp = label(name, color, lsz * 0.9);
           sp.position.copy(origin).addScaledVector(d, -lsz * 0.35);
@@ -1979,14 +2164,14 @@
         // with the pinion shown the forces act at the pitch point; lengthen the arrows so they stick out of it
         const pn = g.pinion, pin = visible.pinion, L = g.Rmax * 0.45;
         const tip = V(g.xB, pin ? g.gear.r : g.gear.ra, 0);
-        arrow3(V(0, -1, 0), tip, L + (pin ? 2 * pn.r + pn.m : 0), FORCE, 'Fr');
-        arrow3(V(1, 0, 0), tip, L + (pin ? Math.max(pn.w, g.gear.w) / 2 : 0), FORCE, 'Fa');
-        arrow3(V(0, 0, 1), tip, L + (pin ? pn.ra : 0), FORCE, 'Ft');
+        arrow3(V(0, -1, 0), tip, L + (pin ? 2 * pn.r + pn.m : 0), FORCE, 'Fr', g.loads.Fr);
+        arrow3(V(1, 0, 0), tip, L + (pin ? Math.max(pn.w, g.gear.w) / 2 : 0), FORCE, 'Fa', g.loads.Fa);
+        arrow3(V(0, 0, 1), tip, L + (pin ? pn.ra : 0), FORCE, 'Ft', g.loads.Ft);
       }
       if (opts.forces && visible.pulley) {
         const rp = g.pulley.R - g.pulley.depth / 2, L = g.Rmax * 0.45;
-        arrow3(V(0, 0, 1), V(g.xD, rp, g.pulley.R * 1.1 + L), L, FORCE, 'F2');
-        arrow3(V(0, 0, 1), V(g.xD, -rp, g.pulley.R * 1.1 + L), L, FORCE, 'F1');
+        arrow3(V(0, 0, 1), V(g.xD, rp, g.pulley.R * 1.1 + L), L, FORCE, 'F2', g.loads.F2);
+        arrow3(V(0, 0, 1), V(g.xD, -rp, g.pulley.R * 1.1 + L), L, FORCE, 'F1', g.loads.F1);
       }
       if (opts.labels) {
         const put = (id, str, x, r) => {
@@ -2009,6 +2194,20 @@
         });
       }
 
+      // Outlines: a dark line along every sharp edge, so that parts of one flat colour still show where a
+      // face ends and which one is in front. Belts and balls are round all over and get none.
+      if (opts.edges) {
+        const edgeMat = new THREE.LineBasicMaterial({ color: C.edge, transparent: true, opacity: 0.6 });
+        const solids = [];
+        [spin, fixed, drive].forEach(grp => grp.traverse(o => {
+          if (!o.isMesh || o.isInstancedMesh) return;
+          const type = o.geometry.type;
+          if (type === 'TubeGeometry' || type === 'SphereGeometry') return;
+          solids.push(o);
+        }));
+        solids.forEach(o => o.add(new THREE.LineSegments(
+          o.geometry.userData.outline || new THREE.EdgesGeometry(o.geometry, 24), edgeMat)));
+      }
       highlight();
       // re-centre the orbit only when the model's centre moved, so a pan survives ordinary redraws
       const tgt = [(g.x0 + g.x1) / 2, 0, visible.vbelt ? g.vbelt.C / 2 : 0];
@@ -2038,7 +2237,8 @@
     const clock = new THREE.Clock();
     renderer.setAnimationLoop(() => {
       const dt = clock.getDelta();
-      if (opts.spin) spin.rotation.y += dt * 1.2;     // slowed down for visibility
+      // the real angular speed of the shaft, slowed 50 times so the teeth can be followed, times the speed chosen
+      if (opts.spin) spin.rotation.y += dt * (SPEED_RPM * 2 * Math.PI / 60) / 50 * animSpeed;
       if (pinionMesh) {                                // keep the teeth in mesh with gear B
         const u = pinionMesh.userData;
         pinionMesh.rotation.y = -(spin.rotation.y - Math.PI + 0.5 * u.pitchG) * u.ratio;
@@ -2198,10 +2398,12 @@
       let ok = false, d = { f: '', s: '' };
       try { ok = !!c[1](g, v); d = c[2](g, v); } catch (e) { /* shown as not met */ }
       const known = d.f ? substituteSymbols(d.f, SYM_IN[c[0]], calc) : null;   // the formula with its numbers
+      latexOf['check-' + c[0]] = [d.f, known, d.s].filter(Boolean).map(toLatex).join(' \\;\\Rightarrow\\; ');
       return `
       <div class="calc-step calc-check ${ok ? 'ok' : 'bad'}" id="check-${c[0]}">
         <div class="num">${ok ? '✓' : '✗'}</div>
         <h3>${t('k.' + c[0])}</h3>
+        ${copyButton('check-' + c[0])}
         <div class="formula">${stackFractions(linkSymbols(d.f, SYM_IN[c[0]]))}</div>
         ${known ? `<div class="subst known">${stackFractions(known)}</div>` : ''}
         <div class="subst">${stackFractions(d.s)}</div>
@@ -2461,6 +2663,8 @@
   applyPanels();
 
   $('#calcList').addEventListener('click', e => {
+    const copy = e.target.closest('.copy-eq');
+    if (copy) { copyLatex(copy); return; }
     const sym = e.target.closest('.sym[data-var]');
     if (sym) { goToVariable(sym.dataset.var); return; }
     const calc = e.target.closest('.sym[data-step]');

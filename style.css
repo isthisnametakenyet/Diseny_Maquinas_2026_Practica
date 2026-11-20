@@ -75,7 +75,7 @@ body {
 .toolbar { flex-wrap: nowrap; gap: 6px; }
 .toolbar .icon-btn { padding: 5px 8px; }
 .toolbar .icon-btn .icon { width: 16px; height: 16px; }
-.toolbar #btnPlay[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+#btnPlay[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
 /* collapsible cards: click the title to show / hide the inputs */
 .card h2 { cursor: pointer; user-select: none; }
@@ -542,3 +542,22 @@ body.no-loads #loads { display: none; }
 /* a worked step reads along one line when there is room: equation, numbers, result; it wraps when there is not */
 .calc-step .work { display: flex; flex-wrap: wrap; align-items: center; column-gap: 14px; row-gap: 2px; }
 .calc-step .work .result::before { content: "⇒"; margin-right: 12px; font-weight: 400; color: var(--muted); }
+
+/* copy one equation as LaTeX: a small button at the top right of its step or check */
+.calc-step { position: relative; }
+.calc-step .copy-eq {
+  position: absolute; top: 9px; right: 0; grid-column: auto;
+  padding: 4px 5px; display: flex; align-items: center; color: var(--muted); opacity: 0.55;
+}
+.calc-step:hover .copy-eq, .calc-step .copy-eq:focus-visible { opacity: 1; }
+.calc-step .copy-eq .icon { width: 14px; height: 14px; }
+.calc-step .copy-eq.done { color: var(--ok); border-color: var(--ok); opacity: 1; }
+.calc-step h3 { padding-right: 34px; }
+
+/* the animation button sits with the view options, left of Forces */
+.view-opts #btnPlay { padding: 4px 7px; }
+.view-opts #btnPlay .icon { width: 15px; height: 15px; }
+
+/* animation speed, next to the play button */
+#selSpeed { font: inherit; font-size: 12px; padding: 3px 4px; border: 1px solid var(--line); border-radius: 5px; background: var(--card); color: var(--text); cursor: pointer; }
+#selSpeed:hover { border-color: var(--accent); }
