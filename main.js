@@ -43,7 +43,7 @@
   const PALETTES = {
     light: {
       ink: '#2b3138', dim: '#3d444d', muted: '#6b7480', paper: '#ffffff', line: '#d9dde2', sceneBg: '#f1f2f4',
-      force: '#b5463c', valid: '#6a9f7c', invalid: '#e6cfcb',
+      select: '#2f6fc4', force: '#b5463c', valid: '#6a9f7c', invalid: '#e6cfcb',
       steel: '#dfe3e7', steel2: '#d2d7dc', steel3: '#c5cbd1', ring: '#cfdae4', ball: '#f1f3f5', chrome: '#e3e6e9',
       belt: '#4d5257', belt3d: '#3f4347', beltMark: '#a9afb6', hole: '#2a2d31',
       comp: { given: '#7a8794', drive: '#5b7fa6', shaft: '#8b949e', bearingA: '#5c85ad', pinion: '#b0705f', gear: '#b8904f',
@@ -53,7 +53,7 @@
     },
     dark: {
       ink: '#d7dce2', dim: '#b4bcc5', muted: '#98a2ad', paper: '#1e2125', line: '#3a4048', sceneBg: '#1a1c20',
-      force: '#d9796f', valid: '#6fae86', invalid: '#5a3b38',
+      select: '#7fb4f5', force: '#d9796f', valid: '#6fae86', invalid: '#5a3b38',
       steel: '#4a5057', steel2: '#555c64', steel3: '#616973', ring: '#42566a', ball: '#6c747d', chrome: '#9aa2ab',
       belt: '#9aa1a8', belt3d: '#6d747c', beltMark: '#c2c8ce', hole: '#111315',
       comp: { given: '#9aa6b2', drive: '#7d9dc0', shaft: '#9aa3ad', bearingA: '#7ba0c4', pinion: '#c58d7d', gear: '#cdaa6e',
@@ -100,9 +100,9 @@
     tabVisual:  ['Visual', 'Visual', 'Visual'],
     tabCalc:    ['Calculations', 'Cálculos', 'Càlculs'],
     view3d:     ['3D view', 'Vista 3D', 'Vista 3D'],
-    hint3d:     ['drag to orbit, wheel to zoom, right-drag to pan',
-                 'arrastrar para orbitar, rueda para zoom, arrastrar con botón derecho para desplazar',
-                 'arrossega per orbitar, roda per fer zoom, arrossega amb el botó dret per desplaçar'],
+    hint3d:     ['click to select, drag to orbit, wheel to zoom, middle or right drag to pan',
+                 'clic para seleccionar, arrastrar para orbitar, rueda para zoom, botón central o derecho para desplazar',
+                 'clic per seleccionar, arrossegar per orbitar, roda per fer zoom, botó central o dret per desplaçar'],
     view2d:     ['2D views', 'Vistas 2D', 'Vistes 2D'],
     hint2d:     ['side view (x–y) and pulley end view (z–y)',
                  'vista lateral (x–y) y vista frontal de la polea (z–y)',
@@ -175,66 +175,20 @@
     ct7: ['Pinion pitch diameter', 'Diámetro primitivo del piñón', 'Diàmetre primitiu del pinyó'],
     ct8: ['Gear ratio and pinion speed', 'Relación de transmisión y velocidad del piñón', 'Relació de transmissió i velocitat del pinyó'],
     ct9: ['Shaft length', 'Longitud del árbol', "Longitud de l'arbre"],
-    cw0: ['n is the shaft speed set in the "Power and speed" card; the statement gives 800 rpm.',
-          'n es la velocidad del árbol fijada en la tarjeta «Potencia y velocidad»; el enunciado da 800 rpm.',
-          "n és la velocitat de l'arbre fixada a la targeta «Potència i velocitat»; l'enunciat dona 800 rpm."],
-    cw1: ['The same torque enters at gear B and leaves at pulley D (losses neglected).',
-          'El mismo par entra por la rueda B y sale por la polea D (se desprecian las pérdidas).',
-          'El mateix parell entra per la roda B i surt per la politja D (es negligeixen les pèrdues).'],
-    cw2: ['The pinion shares this module so the teeth can mesh.',
-          'El piñón comparte este módulo para que los dientes engranen.',
-          'El pinyó comparteix aquest mòdul perquè les dents engranin.'],
-    cw3: ['Acts at the pitch circle, along z.',
-          'Actúa en la circunferencia primitiva, según z.',
-          'Actua a la circumferència primitiva, segons z.'],
-    cw4: ['φ<sub>t</sub> = {phi}° is the transverse pressure angle (20° in the statement). Points towards the shaft axis (−y).',
-          'φ<sub>t</sub> = {phi}° es el ángulo de presión transversal (20° en el enunciado). Apunta hacia el eje del árbol (−y).',
-          "φ<sub>t</sub> = {phi}° és l'angle de pressió transversal (20° a l'enunciat). Apunta cap a l'eix de l'arbre (−y)."],
-    cw5: ['Along x; taken by the located bearing A.',
-          'Según x; la absorbe el rodamiento fijo A.',
-          "Segons x; l'absorbeix el rodament localitzat A."],
-    cw6: ['The tension ratio k = F1/F2 comes from the statement (5): F<sub>1</sub> = ΔF × k / (k − 1) and F<sub>2</sub> = ΔF / (k − 1), with ΔF = F<sub>1</sub> − F<sub>2</sub>.',
-          'La relación de tensiones k = F1/F2 viene del enunciado (5): F<sub>1</sub> = ΔF × k / (k − 1) y F<sub>2</sub> = ΔF / (k − 1), con ΔF = F<sub>1</sub> − F<sub>2</sub>.',
-          "La relació de tensions k = F1/F2 ve de l'enunciat (5): F<sub>1</sub> = ΔF × k / (k − 1) i F<sub>2</sub> = ΔF / (k − 1), amb ΔF = F<sub>1</sub> − F<sub>2</sub>."],
-    cw7: ['', '', ''],
-    cw8: ['The motor runs at {m} rpm, which needs i = {i}.',
-          'El motor gira a {m} rpm, lo que requiere i = {i}.',
-          'El motor gira a {m} rpm, cosa que requereix i = {i}.'],
-    cw9: ['e<sub>L</sub>, e<sub>R</sub> are the left and right overhangs.',
-          'e<sub>L</sub>, e<sub>R</sub> son los voladizos izquierdo y derecho.',
-          'e<sub>L</sub>, e<sub>R</sub> són els voladissos esquerre i dret.'],
     // gear check steps (table lookups)
     'c.design':   ['Gear check', 'Comprobación del engranaje', "Comprovació de l'engranatge"],
     'p.design.life': ['Required gear life (h)', 'Vida requerida de las ruedas (h)', 'Vida requerida de les rodes (h)'],
     'p.design.Qv': ['Quality index Qv', 'Índice de calidad Qv', 'Índex de qualitat Qv'],
     ct10: ['Minimum pinion teeth (interference)', 'Número mínimo de dientes del piñón (interferencia)', 'Nombre mínim de dents del pinyó (interferència)'],
-    cw10ok:  ['The pinion has {z} teeth: no interference with full-depth teeth.',
-              'El piñón tiene {z} dientes: sin interferencia con dientes de profundidad total.',
-              'El pinyó té {z} dents: sense interferència amb dents de profunditat total.'],
-    cw10bad: ['The pinion has {z} teeth, below the minimum: expect interference (undercut) with standard full-depth teeth.',
-              'El piñón tiene {z} dientes, por debajo del mínimo: habrá interferencia (rebaje) con dientes estándar de profundidad total.',
-              'El pinyó té {z} dents, per sota del mínim: hi haurà interferència (rebaix) amb dents estàndard de profunditat total.'],
     ct11: ['Normal module and next standard module', 'Módulo normal y siguiente módulo estándar', 'Mòdul normal i següent mòdul estàndard'],
-    cw11: ['Standard modules apply in the normal plane of a helical gear.',
-           'Los módulos estándar se aplican en el plano normal de un engranaje helicoidal.',
-           "Els mòduls estàndard s'apliquen al pla normal d'un engranatge helicoïdal."],
     stdNone: ['above the largest standard module', 'por encima del mayor módulo estándar', 'per sobre del mòdul estàndard més gran'],
     ct12: ['Application factor K<sub>a</sub>', 'Factor de aplicación K<sub>a</sub>', "Factor d'aplicació K<sub>a</sub>"],
     kaSel: ['Driver: electric motor (uniform); Driven machine: moderate shock',
             'Máquina impulsora: motor eléctrico (uniforme); Máquina impulsada: impacto moderado',
             'Màquina impulsora: motor elèctric (uniforme); Màquina impulsada: impacte moderat'],
-    cw12: ['The statement says an electric motor drives a machine with a moderately variable load.',
-           'El enunciado indica un motor eléctrico que acciona una máquina con carga moderadamente variable.',
-           "L'enunciat indica un motor elèctric que acciona una màquina amb càrrega moderadament variable."],
     ct13: ['Load distribution factor K<sub>m</sub>', 'Factor de distribución de carga K<sub>m</sub>', 'Factor de distribució de càrrega K<sub>m</sub>'],
     kmSel: ['Face width F = {F} mm → row "{row} mm"', 'Anchura de cara F = {F} mm → fila «{row} mm»', 'Amplada de cara F = {F} mm → fila «{row} mm»'],
-    cw13: ['F is the face width of gear B; the next tabulated width up is used.',
-           'F es la anchura de cara de la rueda B; se toma la siguiente anchura tabulada.',
-           "F és l'amplada de cara de la roda B; es pren la següent amplada tabulada."],
     ct14: ['Pitch-line velocity and dynamic factor K<sub>v</sub>', 'Velocidad en la línea de paso y factor dinámico K<sub>v</sub>', 'Velocitat a la línia de pas i factor dinàmic K<sub>v</sub>'],
-    cw14: ['Q<sub>v</sub> is the quality index set in the "Gear check" card. Read the chart on the m/s axis.',
-           'Q<sub>v</sub> es el índice de calidad fijado en la tarjeta «Comprobación del engranaje». El gráfico se lee en el eje de m/s.',
-           "Q<sub>v</sub> és l'índex de qualitat fixat a la targeta «Comprovació de l'engranatge». El gràfic es llegeix a l'eix de m/s."],
     ct15: ['Bending geometry factor J', 'Factor geométrico de flexión J', 'Factor geomètric de flexió J'],
     jSel:  ['Pinion {np} teeth, gear {ng} teeth → read at {npu} / {ngu}',
             'Piñón de {np} dientes, rueda de {ng} dientes → se lee en {npu} / {ngu}',
@@ -243,18 +197,9 @@
             'Piñón de {np} dientes, rueda de {ng} dientes → fuera de la tabla',
             'Pinyó de {np} dents, roda de {ng} dents → fora de la taula'],
     jNoneR: ['J not tabulated for this pair', 'J no tabulado para este par', 'J no tabulat per a aquest parell'],
-    cw15: ['Table 9-5 is for φ = 25° and ψ = 20°; other angles need their own table. Tooth counts are rounded down to the nearest tabulated value.',
-           'La tabla 9-5 es para φ = 25° y ψ = 20°; otros ángulos requieren su propia tabla. El número de dientes se redondea hacia abajo al valor tabulado más cercano.',
-           "La taula 9-5 és per a φ = 25° i ψ = 20°; altres angles requereixen la seva pròpia taula. El nombre de dents s'arrodoneix cap avall al valor tabulat més proper."],
     ct16: ['Elastic coefficient C<sub>p</sub>', 'Coeficiente elástico C<sub>p</sub>', 'Coeficient elàstic C<sub>p</sub>'],
     cpSel: ['Pinion: steel; Gear: steel', 'Piñón: acero; Rueda: acero', 'Pinyó: acer; Roda: acer'],
-    cw16: ['Steel on steel is assumed; the statement does not give the materials.',
-           'Se supone acero contra acero; el enunciado no indica los materiales.',
-           "Se suposa acer contra acer; l'enunciat no indica els materials."],
     ct17: ['Bending stress at the tooth root', 'Tensión de flexión en la raíz del diente', "Tensió de flexió a l'arrel de la dent"],
-    cw17: ['K<sub>s</sub> = K<sub>B</sub> = K<sub>I</sub> = 1 (solid gears, no idler). m is the transverse module.',
-           'K<sub>s</sub> = K<sub>B</sub> = K<sub>I</sub> = 1 (ruedas macizas, sin rueda loca). m es el módulo transversal.',
-           'K<sub>s</sub> = K<sub>B</sub> = K<sub>I</sub> = 1 (rodes massisses, sense roda boja). m és el mòdul transversal.'],
     noJ:  ['needs J, which is not tabulated for this tooth count', 'requiere J, no tabulado para este número de dientes', 'requereix J, no tabulat per a aquest nombre de dents'],
     // V-belt drive steps
     'c.vbelt':        ['V-belt drive (pulley D)', 'Transmisión por correa trapezoidal (polea D)', 'Transmissió per corretja trapezoïdal (politja D)'],
@@ -263,52 +208,38 @@
     'p.vbelt.C':      ['Centre distance (mm)', 'Distancia entre centros (mm)', 'Distància entre centres (mm)'],
     'p.vbelt.Ks':     ['Service factor Ks', 'Factor de servicio Ks', 'Factor de servei Ks'],
     ct18: ['V-belt: design power', 'Correa trapezoidal: potencia de diseño', 'Corretja trapezoïdal: potència de disseny'],
-    cw18: ['K<sub>s</sub> is set in the "V-belt drive" card; 1.1–1.3 is the range for a light-shock machine driven by a normal-torque source. Design factor N<sub>d</sub> = 1.',
-           'K<sub>s</sub> se fija en la tarjeta «Transmisión por correa trapezoidal»; 1,1–1,3 es el intervalo para una máquina con impacto ligero y fuente de par normal. Factor de diseño N<sub>d</sub> = 1.',
-           "K<sub>s</sub> es fixa a la targeta «Transmissió per corretja trapezoïdal»; 1,1–1,3 és l'interval per a una màquina amb impacte lleuger i font de parell normal. Factor de disseny N<sub>d</sub> = 1."],
     ct19: ['V-belt: section', 'Correa trapezoidal: sección', 'Corretja trapezoïdal: secció'],
     secSel: ['P<sub>d</sub> = {P} hp, smaller pulley d = {d} in → section {s}',
              'P<sub>d</sub> = {P} hp, polea menor d = {d} pulg → sección {s}',
              'P<sub>d</sub> = {P} hp, politja menor d = {d} in → secció {s}'],
-    cw19ok:  ['Smallest section whose power range covers P<sub>d</sub>. The smaller pulley meets the minimum diameter of {m} in.',
-              'Sección más pequeña cuyo intervalo de potencias cubre P<sub>d</sub>. La polea menor cumple el diámetro mínimo de {m} pulg.',
-              "Secció més petita amb un interval de potències que cobreix P<sub>d</sub>. La politja menor compleix el diàmetre mínim de {m} in."],
-    cw19bad: ['Smallest section whose power range covers P<sub>d</sub>. The smaller pulley is below the minimum diameter of {m} in for this section.',
-              'Sección más pequeña cuyo intervalo de potencias cubre P<sub>d</sub>. La polea menor está por debajo del diámetro mínimo de {m} pulg para esta sección.',
-              "Secció més petita amb un interval de potències que cobreix P<sub>d</sub>. La politja menor està per sota del diàmetre mínim de {m} in per a aquesta secció."],
     ct20: ['V-belt: belt speed', 'Correa trapezoidal: velocidad de la correa', 'Corretja trapezoïdal: velocitat de la corretja'],
-    cw20: ['d is the pitch diameter of pulley D (its outer diameter is used) in inches; n = {n} rpm. V-belts are meant to run at 4000–5000 ft/min.',
-           'd es el diámetro de paso de la polea D (se usa su diámetro exterior) en pulgadas; n = {n} rpm. Las correas trapezoidales están pensadas para 4000–5000 pies/min.',
-           "d és el diàmetre de pas de la politja D (s'usa el diàmetre exterior) en polzades; n = {n} rpm. Les corretges trapezoïdals estan pensades per a 4000–5000 ft/min."],
     ct21: ['V-belt: belt length and standard belt', 'Correa trapezoidal: longitud y correa normalizada', 'Corretja trapezoïdal: longitud i corretja normalitzada'],
-    cw21: ['The inside circumference is L<sub>p</sub> minus {a} in for section {s}; the next standard length up is taken. C is the centre distance set in the "V-belt drive" card.',
-           'La circunferencia interior es L<sub>p</sub> menos {a} pulg para la sección {s}; se toma la siguiente longitud normalizada. C es la distancia entre centros fijada en la tarjeta «Transmisión por correa trapezoidal».',
-           'La circumferència interior és L<sub>p</sub> menys {a} in per a la secció {s}; es pren la següent longitud normalitzada. C és la distància entre centres fixada a la targeta «Transmissió per corretja trapezoïdal».'],
     ct22: ['V-belt: centre distance with the standard belt', 'Correa trapezoidal: distancia entre centros con la correa normalizada', 'Corretja trapezoïdal: distància entre centres amb la corretja normalitzada'],
-    cw22ok:  ['Meets the design condition D < C < 3(D + d).', 'Cumple la condición de diseño D < C < 3(D + d).', 'Compleix la condició de disseny D < C < 3(D + d).'],
-    cw22bad: ['Outside the design condition D < C < 3(D + d).', 'Fuera de la condición de diseño D < C < 3(D + d).', 'Fora de la condició de disseny D < C < 3(D + d).'],
     ct23: ['V-belt: rated power per belt', 'Correa trapezoidal: potencia tabulada por correa', 'Corretja trapezoïdal: potència tabulada per corretja'],
     ptSel: ['Section {s}, d = {d} in, V = {V} ft/min', 'Sección {s}, d = {d} pulg, V = {V} pies/min', 'Secció {s}, d = {d} in, V = {V} ft/min'],
-    cw23: ['Interpolated between the marked cells; d is the smaller pulley.', 'Interpolado entre las celdas marcadas; d es la polea menor.', 'Interpolat entre les cel·les marcades; d és la politja menor.'],
     ptNone: ['the smaller pulley is below the smallest tabulated diameter', 'la polea menor está por debajo del menor diámetro tabulado', 'la politja menor està per sota del menor diàmetre tabulat'],
     ct24: ['V-belt: contact angle factor K<sub>1</sub>', 'Correa trapezoidal: factor del ángulo de contacto K<sub>1</sub>', "Corretja trapezoïdal: factor de l'angle de contacte K<sub>1</sub>"],
-    cw24: ['V-belt on V-grooved pulleys (column VV), interpolated between the marked rows.',
-           'Correa trapezoidal sobre poleas acanaladas (columna VV), interpolado entre las filas marcadas.',
-           'Corretja trapezoïdal sobre politges acanalades (columna VV), interpolat entre les files marcades.'],
     ct25: ['V-belt: length factor K<sub>2</sub>', 'Correa trapezoidal: factor de longitud K<sub>2</sub>', 'Corretja trapezoïdal: factor de longitud K<sub>2</sub>'],
     k2Sel: ['Belt {b} → section {s}, nominal length {L} in', 'Correa {b} → sección {s}, longitud nominal {L} pulg', 'Corretja {b} → secció {s}, longitud nominal {L} in'],
     ct26: ['V-belt: allowable power and number of belts', 'Correa trapezoidal: potencia admisible y número de correas', 'Corretja trapezoïdal: potència admissible i nombre de corretges'],
-    cw26ok:  ['Pulley D has {n} grooves: enough. Safety factor P<sub>a</sub> × N<sub>b</sub> / (P<sub>nom</sub> × K<sub>s</sub>) = {sf}.',
-              'La polea D tiene {n} canales: suficiente. Factor de seguridad P<sub>a</sub> × N<sub>b</sub> / (P<sub>nom</sub> × K<sub>s</sub>) = {sf}.',
-              'La politja D té {n} canals: suficient. Factor de seguretat P<sub>a</sub> × N<sub>b</sub> / (P<sub>nom</sub> × K<sub>s</sub>) = {sf}.'],
-    cw26bad: ['Pulley D has only {n} grooves: {nb} are needed.', 'La polea D solo tiene {n} canales: se necesitan {nb}.', "La politja D només té {n} canals: se'n necessiten {nb}."],
     ct27: ['V-belt: belt forces', 'Correa trapezoidal: fuerzas en la correa', 'Corretja trapezoïdal: forces a la corretja'],
-    cw27: ['Per belt, with the design power. θ is the contact angle on the smaller pulley and 0.5123 the effective friction coefficient. Total pull on the shaft ≈ N<sub>b</sub> (F<sub>1</sub> + F<sub>2</sub>) = {tot} N.',
-           'Por correa, con la potencia de diseño. θ es el ángulo de contacto en la polea menor y 0,5123 el coeficiente de fricción efectivo. Tiro total sobre el árbol ≈ N<sub>b</sub> (F<sub>1</sub> + F<sub>2</sub>) = {tot} N.',
-           "Per corretja, amb la potència de disseny. θ és l'angle de contacte a la politja menor i 0,5123 el coeficient de fricció efectiu. Tir total sobre l'arbre ≈ N<sub>b</sub> (F<sub>1</sub> + F<sub>2</sub>) = {tot} N."],
     // fixing variables and design checks
     met:        ['Met', 'Se cumple', 'Es compleix'],
     notMet:     ['Not met', 'No se cumple', 'No es compleix'],
+    calcLocked: ['Fix at least one variable (the pin next to it) to see the calculations. While every value is still free, only the design checks are shown.',
+                 'Fija al menos una variable (la chincheta a su lado) para ver los cálculos. Mientras todos los valores sigan libres, solo se muestran las comprobaciones de diseño.',
+                 'Fixa almenys una variable (la xinxeta del costat) per veure els càlculs. Mentre tots els valors siguin lliures, només es mostren les comprovacions de disseny.'],
+    whyNone:    ['no value passes all of these checks at once:', 'ningún valor cumple todas estas comprobaciones a la vez:', 'cap valor compleix totes aquestes comprovacions alhora:'],
+    whyOut:     ['outside its valid range because of these checks:', 'fuera de su rango válido por estas comprobaciones:', 'fora del seu rang vàlid per aquestes comprovacions:'],
+    whyRule:    ['Why this rule?', '¿Por qué esta regla?', 'Per què aquesta regla?'],
+    whyNeeds:   ['needs {r}', 'necesita {r}', 'necessita {r}'],
+    whyNow:     ['Now:', 'Ahora:', 'Ara:'],
+    varsFixed:  ['Fixed', 'Fijas', 'Fixades'],
+    varsFree:   ['Free', 'Libres', 'Lliures'],
+    rngValid:   ['valid {r}', 'válido {r}', 'vàlid {r}'],
+    rngSpan:    ['{a} to {b}', '{a} a {b}', '{a} a {b}'],
+    rngAny:     ['any value', 'cualquier valor', 'qualsevol valor'],
+    rngNone:    ['no valid value', 'ningún valor válido', 'cap valor vàlid'],
     showCalc:   ['Show the calculation', 'Ver el cálculo', 'Mostra el càlcul'],
     fix:        ['fix', 'fijar', 'fixa'],
     fixed:      ['fixed', 'fijo', 'fixat'],
@@ -316,6 +247,26 @@
     checksCount: ['{a} of {b} pass', '{a} de {b} correctas', '{a} de {b} correctes'],
     bandTip:    ['works from {a} to {b}', 'válido de {a} a {b}', 'vàlid de {a} a {b}'],
     bandNone:   ['No value of this variable makes its checks pass', 'Ningún valor de esta variable cumple sus comprobaciones', "Cap valor d'aquesta variable compleix les seves comprovacions"],
+    // why each design check exists (shown with the check in the Calculations tab)
+    'y.shoulder': ["The shoulder is the step the bearing rings and the gear rest against, so they cannot slide along the shaft. If it is not larger than the journal there is nothing to rest on. This is a construction rule of the app, not a value from the statement.", "El resalte es el escalón contra el que apoyan los anillos de los rodamientos y la rueda, para que no se desplacen a lo largo del árbol. Si no es mayor que el muñón no hay dónde apoyar. Es una regla constructiva de la app, no un dato del enunciado.", "El ressalt és l'esglaó contra el qual recolzen els anells dels rodaments i la roda, perquè no es desplacin al llarg de l'arbre. Si no és més gran que el monyó no hi ha on recolzar. És una regla constructiva de l'app, no una dada de l'enunciat."],
+    'y.bearingA': ["Between the bore and the outer diameter a ball bearing has to fit the inner ring, the balls and the outer ring. The 16 mm is a rough minimum chosen by the app so the drawing is a possible bearing; the real outer diameter comes from the catalogue once the bearing is selected.", "Entre el agujero y el diámetro exterior un rodamiento de bolas debe alojar el anillo interior, las bolas y el anillo exterior. Los 16 mm son un mínimo aproximado elegido por la app para que el dibujo sea un rodamiento posible; el diámetro exterior real sale del catálogo al seleccionar el rodamiento.", "Entre el forat i el diàmetre exterior un rodament de boles ha d'allotjar l'anell interior, les boles i l'anell exterior. Els 16 mm són un mínim aproximat triat per l'app perquè el dibuix sigui un rodament possible; el diàmetre exterior real surt del catàleg en seleccionar el rodament."],
+    'y.rim': ["The rim is the material between the tooth roots and the bore. If it is thin, the gear cracks through the rim instead of at the tooth root, and the bending stress formula no longer holds. AGMA keeps its rim factor at 1 (no penalty) only while the rim is at least 1.2 times the whole tooth depth, which is 2.25 modules.", "La llanta es el material entre el pie de los dientes y el agujero. Si es delgada, la rueda se agrieta a través de la llanta en lugar de por el pie del diente, y la fórmula de la tensión de flexión deja de valer. AGMA mantiene su factor de llanta en 1 (sin penalización) solo mientras la llanta sea al menos 1,2 veces la altura total del diente, que es 2,25 módulos.", "La llanta és el material entre el peu de les dents i el forat. Si és prima, la roda s'esquerda a través de la llanta en lloc de pel peu de la dent, i la fórmula de la tensió de flexió deixa de valdre. AGMA manté el seu factor de llanta en 1 (sense penalització) només mentre la llanta sigui almenys 1,2 vegades l'alçada total de la dent, que és 2,25 mòduls."],
+    'y.face': ["The face width F shares the tooth load along its length. Too narrow (under 8 modules) and the load per millimetre, and so the stress, is high. Too wide (over 16 modules) and the shaft's bending and misalignment stop the load from spreading evenly, so one end of the tooth carries most of it and the extra width is wasted. That is why the limits are multiples of the module: they scale with the tooth size.", "El ancho de cara F reparte la carga del diente a lo largo de su longitud. Demasiado estrecho (menos de 8 módulos) y la carga por milímetro, y por tanto la tensión, es alta. Demasiado ancho (más de 16 módulos) y la flexión del árbol y la desalineación impiden que la carga se reparta por igual, de modo que un extremo del diente soporta casi todo y el ancho extra no sirve. Por eso los límites son múltiplos del módulo: crecen con el tamaño del diente.", "L'amplada de cara F reparteix la càrrega de la dent al llarg de la seva longitud. Massa estreta (menys de 8 mòduls) i la càrrega per mil·límetre, i per tant la tensió, és alta. Massa ampla (més de 16 mòduls) i la flexió de l'arbre i la desalineació impedeixen que la càrrega es reparteixi per igual, de manera que un extrem de la dent ho suporta gairebé tot i l'amplada extra no serveix. Per això els límits són múltiples del mòdul: creixen amb la mida de la dent."],
+    'y.minTeeth': ["With too few teeth, the tip of the mating tooth reaches below the base circle of the pinion and digs into the flank near its root (interference). Cutting the gear then removes that material (undercut) and weakens the tooth. The minimum number depends only on the pressure angle: a larger angle allows fewer teeth.", "Con muy pocos dientes, la punta del diente conjugado llega por debajo de la circunferencia base del piñón y se clava en el flanco cerca del pie (interferencia). Al tallar la rueda ese material se elimina (socavado) y el diente queda debilitado. El número mínimo depende solo del ángulo de presión: un ángulo mayor permite menos dientes.", "Amb massa poques dents, la punta de la dent conjugada arriba per sota de la circumferència base del pinyó i es clava al flanc prop del peu (interferència). En tallar la roda aquest material s'elimina (soscavat) i la dent queda debilitada. El nombre mínim depèn només de l'angle de pressió: un angle més gran permet menys dents."],
+    'y.motor': ["The pinion is on the motor shaft, so it turns at the motor speed. The ratio of teeth is what turns that speed into the speed the shaft needs: n × zB / zp has to equal the motor speed. Teeth are whole numbers, so the exact ratio is rarely possible; the 2 % allowed is a tolerance chosen by the app.", "El piñón está en el eje del motor, así que gira a la velocidad del motor. La relación de dientes es la que convierte esa velocidad en la que necesita el árbol: n × zB / zp debe ser igual a la velocidad del motor. Los dientes son números enteros, por lo que la relación exacta rara vez es posible; el 2 % admitido es una tolerancia elegida por la app.", "El pinyó és a l'eix del motor, de manera que gira a la velocitat del motor. La relació de dents és la que converteix aquesta velocitat en la que necessita l'arbre: n × zB / zp ha de ser igual a la velocitat del motor. Les dents són nombres enters, per això la relació exacta poques vegades és possible; el 2 % admès és una tolerància triada per l'app."],
+    'y.pinionW': ["The pinion is usually made a little wider than the gear so that the whole face of the gear stays in mesh even if the two are not perfectly aligned along the shaft. The pinion is also the cheaper part to widen. This is common practice, not a value from the statement.", "El piñón suele hacerse algo más ancho que la rueda para que toda la cara de la rueda siga engranando aunque no estén perfectamente alineados a lo largo del árbol. Además el piñón es la pieza más barata de ensanchar. Es práctica habitual, no un dato del enunciado.", "El pinyó se sol fer una mica més ample que la roda perquè tota la cara de la roda continuï engranant encara que no estiguin perfectament alineats al llarg de l'arbre. A més, el pinyó és la peça més barata d'eixamplar. És pràctica habitual, no una dada de l'enunciat."],
+    'y.groove': ["A V-belt grips by wedging its sides into the groove. The groove must be at least as deep as the belt section (b), or the belt sits on the bottom and loses the wedge effect. Under the groove there must still be material above the hub; the 5 mm is the app's own margin.", "Una correa trapezoidal agarra al acuñarse por sus flancos en la canal. La canal debe ser al menos tan profunda como la sección de la correa (b); si no, la correa apoya en el fondo y pierde el efecto cuña. Bajo la canal debe quedar material por encima del cubo; los 5 mm son un margen propio de la app.", "Una corretja trapezoïdal agafa en falcar-se pels flancs dins la canal. La canal ha de ser almenys tan fonda com la secció de la corretja (b); si no, la corretja recolza al fons i perd l'efecte falca. Sota la canal ha de quedar material per sobre del cub; els 5 mm són un marge propi de l'app."],
+    'y.pitch': ["Each groove needs the top width of the belt section (a) plus a wall between it and the next groove; the 3 mm of wall is the app's own value. If the pulley is narrower than that times the number of grooves, the belts do not fit side by side.", "Cada canal necesita el ancho superior de la sección de la correa (a) más una pared entre ella y la siguiente; los 3 mm de pared son un valor propio de la app. Si la polea es más estrecha que eso por el número de canales, las correas no caben una junto a otra.", "Cada canal necessita l'amplada superior de la secció de la corretja (a) més una paret entre ella i la següent; els 3 mm de paret són un valor propi de l'app. Si la politja és més estreta que això pel nombre de canals, les corretges no caben de costat."],
+    'y.dmin': ["A belt bends every time it goes round a pulley. On a pulley that is too small it bends too sharply, which overstresses its cords and shortens its life quickly. Each belt section has a minimum pulley diameter in the T12 table for that reason.", "Una correa se dobla cada vez que pasa por una polea. En una polea demasiado pequeña se dobla en exceso, lo que sobrecarga sus cuerdas y acorta mucho su vida. Por eso cada sección de correa tiene un diámetro mínimo de polea en la tabla de T12.", "Una corretja es doblega cada vegada que passa per una politja. En una politja massa petita es doblega en excés, cosa que sobrecarrega les seves cordes i n'escurça molt la vida. Per això cada secció de corretja té un diàmetre mínim de politja a la taula de T12."],
+    'y.speed': ["The belt power tables of T12 only go up to 5000 ft/min. Above that, centrifugal force throws the belt outwards, it presses less on the grooves and transmits less, so the tables can no longer be used.", "Las tablas de potencia de las correas de T12 solo llegan a 5000 ft/min. Por encima, la fuerza centrífuga lanza la correa hacia fuera, aprieta menos en las canales y transmite menos, de modo que las tablas ya no sirven.", "Les taules de potència de les corretges de T12 només arriben a 5000 ft/min. Per sobre, la força centrífuga llança la corretja cap enfora, prem menys a les canals i transmet menys, de manera que les taules ja no serveixen."],
+    'y.centre': ["If the pulleys are too close (C below the larger diameter), the belt wraps little of the small pulley, so it slips, and each point of the belt bends too often. If they are too far apart (C above three times the sum of the diameters), the long free spans vibrate and whip. T12 gives this range.", "Si las poleas están demasiado cerca (C menor que el diámetro mayor), la correa abraza poco la polea pequeña, por lo que patina, y cada punto de la correa se dobla con demasiada frecuencia. Si están demasiado lejos (C mayor que tres veces la suma de los diámetros), los tramos libres largos vibran y dan latigazos. T12 da este intervalo.", "Si les politges són massa a prop (C més petit que el diàmetre gran), la corretja abraça poc la politja petita, per això patina, i cada punt de la corretja es doblega massa sovint. Si són massa lluny (C més gran que tres vegades la suma dels diàmetres), els trams lliures llargs vibren i fan fuetades. T12 dona aquest interval."],
+    'y.fatigue': ["The loads keep their direction while the shaft turns, so every point of its surface goes from tension to compression once per turn: millions of cycles. A stress far below the yield strength can then start a crack. The Goodman factor compares the stresses with what the steel endures for an unlimited number of cycles, and the statement asks for at least 2.0.", "Las cargas mantienen su dirección mientras el árbol gira, así que cada punto de su superficie pasa de tracción a compresión una vez por vuelta: millones de ciclos. Una tensión muy inferior al límite elástico puede entonces iniciar una grieta. El coeficiente de Goodman compara las tensiones con lo que el acero aguanta durante un número ilimitado de ciclos, y el enunciado pide al menos 2,0.", "Les càrregues mantenen la seva direcció mentre l'arbre gira, de manera que cada punt de la seva superfície passa de tracció a compressió un cop per volta: milions de cicles. Una tensió molt inferior al límit elàstic pot llavors iniciar una esquerda. El coeficient de Goodman compara les tensions amb el que l'acer aguanta durant un nombre il·limitat de cicles, i l'enunciat demana almenys 2,0."],
+    'y.peak': ["When the motor starts it gives 2.5 times the nominal torque for a moment. That happens too few times to cause fatigue, but a single peak can bend the shaft permanently if the stress reaches the yield strength. So the largest stress at the peak is compared with the yield strength, and the statement asks for a factor of at least 1.5.", "Al arrancar, el motor da 2,5 veces el par nominal durante un instante. Eso ocurre muy pocas veces para causar fatiga, pero un solo pico puede doblar el árbol de forma permanente si la tensión alcanza el límite elástico. Por eso la tensión máxima en el pico se compara con el límite elástico, y el enunciado pide un coeficiente de al menos 1,5.", "En arrencar, el motor dona 2,5 vegades el parell nominal durant un instant. Això passa massa poques vegades per causar fatiga, però un sol pic pot doblegar l'arbre de manera permanent si la tensió arriba al límit elàstic. Per això la tensió màxima al pic es compara amb el límit elàstic, i l'enunciat demana un coeficient d'almenys 1,5."],
+    'y.belts': ["One belt can only carry a limited power (its table value, corrected for wrap angle and length). The number of belts is the design power divided by that, rounded up, and every belt needs its own groove on the pulley.", "Una correa solo puede transmitir una potencia limitada (su valor de tabla, corregido por el ángulo de contacto y la longitud). El número de correas es la potencia de diseño dividida por ese valor, redondeado hacia arriba, y cada correa necesita su propia canal en la polea.", "Una corretja només pot transmetre una potència limitada (el seu valor de taula, corregit per l'angle de contacte i la longitud). El nombre de corretges és la potència de disseny dividida per aquest valor, arrodonit cap amunt, i cada corretja necessita la seva pròpia canal a la politja."],
+    'y.bearingC': ["Between the bore and the outer diameter a ball bearing has to fit the inner ring, the balls and the outer ring. The 16 mm is a rough minimum chosen by the app so the drawing is a possible bearing; the real outer diameter comes from the catalogue once the bearing is selected.", "Entre el agujero y el diámetro exterior un rodamiento de bolas debe alojar el anillo interior, las bolas y el anillo exterior. Los 16 mm son un mínimo aproximado elegido por la app para que el dibujo sea un rodamiento posible; el diámetro exterior real sale del catálogo al seleccionar el rodamiento.", "Entre el forat i el diàmetre exterior un rodament de boles ha d'allotjar l'anell interior, les boles i l'anell exterior. Els 16 mm són un mínim aproximat triat per l'app perquè el dibuix sigui un rodament possible; el diàmetre exterior real surt del catàleg en seleccionar el rodament."],
+    'y.roomAB': ["The statement fixes the distance between the centres of the two parts. Half the width of each has to fit in that distance, plus 2 mm so they do not touch (the gap is the app's choice). Otherwise the parts would occupy the same space.", "El enunciado fija la distancia entre los centros de las dos piezas. La mitad del ancho de cada una debe caber en esa distancia, más 2 mm para que no se toquen (la holgura la elige la app). De lo contrario las piezas ocuparían el mismo espacio.", "L'enunciat fixa la distància entre els centres de les dues peces. La meitat de l'amplada de cadascuna ha de cabre en aquesta distància, més 2 mm perquè no es toquin (el joc el tria l'app). Altrament les peces ocuparien el mateix espai."],
+    'y.roomBC': ["The statement fixes the distance between the centres of the two parts. Half the width of each has to fit in that distance, plus 2 mm so they do not touch (the gap is the app's choice). Otherwise the parts would occupy the same space.", "El enunciado fija la distancia entre los centros de las dos piezas. La mitad del ancho de cada una debe caber en esa distancia, más 2 mm para que no se toquen (la holgura la elige la app). De lo contrario las piezas ocuparían el mismo espacio.", "L'enunciat fixa la distància entre els centres de les dues peces. La meitat de l'amplada de cadascuna ha de cabre en aquesta distància, més 2 mm perquè no es toquin (el joc el tria l'app). Altrament les peces ocuparien el mateix espai."],
+    'y.roomCD': ["The statement fixes the distance between the centres of the two parts. Half the width of each has to fit in that distance, plus 2 mm so they do not touch (the gap is the app's choice). Otherwise the parts would occupy the same space.", "El enunciado fija la distancia entre los centros de las dos piezas. La mitad del ancho de cada una debe caber en esa distancia, más 2 mm para que no se toquen (la holgura la elige la app). De lo contrario las piezas ocuparían el mismo espacio.", "L'enunciat fixa la distància entre els centres de les dues peces. La meitat de l'amplada de cadascuna ha de cabre en aquesta distància, més 2 mm perquè no es toquin (el joc el tria l'app). Altrament les peces ocuparien el mateix espai."],
     'k.shoulder': ['Shaft shoulder larger than the journal', 'Resalte del árbol mayor que el muñón', "Ressalt de l'arbre més gran que el monyó"],
     'k.bearingA': ['Bearing A outer diameter leaves room for the rings (bore + 16 mm)', 'Diámetro exterior del rodamiento A con espacio para los aros (agujero + 16 mm)', 'Diàmetre exterior del rodament A amb espai per als anells (forat + 16 mm)'],
     'k.bearingC': ['Bearing C outer diameter leaves room for the rings (bore + 16 mm)', 'Diámetro exterior del rodamiento C con espacio para los aros (agujero + 16 mm)', 'Diàmetre exterior del rodament C amb espai per als anells (forat + 16 mm)'],
@@ -336,17 +287,8 @@
     'k.peak':     ['Shaft does not yield at the starting peak', 'El árbol no plastifica en el pico de arranque', "L'arbre no plastifica en el pic d'arrencada"],
     'k.belts':    ['Enough grooves for the belts needed', 'Canales suficientes para las correas necesarias', 'Canals suficients per a les corretges necessàries'],
     ct28: ['Gear life: load cycles', 'Vida de las ruedas: ciclos de carga', 'Vida de les rodes: cicles de càrrega'],
-    cw28: ['h is the required gear life set in the "Gear check" card (20 000 h in the statement). Each tooth is loaded once per turn.',
-           'h es la vida requerida de las ruedas fijada en la tarjeta «Comprobación del engranaje» (20 000 h en el enunciado). Cada diente se carga una vez por vuelta.',
-           "h és la vida requerida de les rodes fixada a la targeta «Comprovació de l'engranatge» (20 000 h a l'enunciat). Cada dent es carrega un cop per volta."],
     ct29: ['Gear life: bending life factor K<sub>L</sub>', 'Vida de las ruedas: factor de vida a flexión K<sub>L</sub>', 'Vida de les rodes: factor de vida a flexió K<sub>L</sub>'],
-    cw29: ['Upper (commercial) curve of the chart, valid above about 3 × 10<sup>6</sup> cycles. It scales the bending strength: S<sub>fb</sub> = K<sub>L</sub> / (K<sub>T</sub> K<sub>R</sub>) × S′<sub>fb</sub>.',
-           'Curva superior (comercial) del gráfico, válida por encima de unos 3 × 10<sup>6</sup> ciclos. Escala la resistencia a flexión: S<sub>fb</sub> = K<sub>L</sub> / (K<sub>T</sub> K<sub>R</sub>) × S′<sub>fb</sub>.',
-           'Corba superior (comercial) del gràfic, vàlida per sobre d\'uns 3 × 10<sup>6</sup> cicles. Escala la resistència a flexió: S<sub>fb</sub> = K<sub>L</sub> / (K<sub>T</sub> K<sub>R</sub>) × S′<sub>fb</sub>.'],
     ct30: ['Gear life: surface life factor C<sub>L</sub>', 'Vida de las ruedas: factor de vida superficial C<sub>L</sub>', 'Vida de les rodes: factor de vida superficial C<sub>L</sub>'],
-    cw30: ['Upper (commercial) curve of the chart. It scales the surface strength: S<sub>fc</sub> = C<sub>L</sub> C<sub>H</sub> / (C<sub>T</sub> C<sub>R</sub>) × S′<sub>fc</sub>.',
-           'Curva superior (comercial) del gráfico. Escala la resistencia superficial: S<sub>fc</sub> = C<sub>L</sub> C<sub>H</sub> / (C<sub>T</sub> C<sub>R</sub>) × S′<sub>fc</sub>.',
-           'Corba superior (comercial) del gràfic. Escala la resistència superficial: S<sub>fc</sub> = C<sub>L</sub> C<sub>H</sub> / (C<sub>T</sub> C<sub>R</sub>) × S′<sub>fc</sub>.'],
     // starting data of the statement
     'c.given':          ['Bearings: life and conditions', 'Rodamientos: vida y condiciones', 'Rodaments: vida i condicions'],
     'p.given.motor':    ['Motor speed (rpm)', 'Velocidad del motor (rpm)', 'Velocitat del motor (rpm)'],
@@ -357,41 +299,55 @@
     'p.given.relBear':  ['Bearing reliability (%)', 'Fiabilidad de los rodamientos (%)', 'Fiabilitat dels rodaments (%)'],
     'p.given.temp':     ['Working temperature (°C)', 'Temperatura de trabajo (°C)', 'Temperatura de treball (°C)'],
     ct31: ['Temperature factor K<sub>T</sub>', 'Factor de temperatura K<sub>T</sub>', 'Factor de temperatura K<sub>T</sub>'],
-    cw31: ['T is the working temperature set in the bearings card. K<sub>T</sub> divides both gear strengths.',
-           'T es la temperatura de trabajo fijada en la tarjeta de rodamientos. K<sub>T</sub> divide ambas resistencias de las ruedas.',
-           'T és la temperatura de treball fixada a la targeta de rodaments. K<sub>T</sub> divideix totes dues resistències de les rodes.'],
     ct32: ['Bearings: required life in revolutions', 'Rodamientos: vida requerida en revoluciones', 'Rodaments: vida requerida en revolucions'],
-    cw32: ['Life the bearings must reach at {r} % reliability. Choosing the bearing and checking its load rating is not in the app yet.',
-           'Vida que deben alcanzar los rodamientos con una fiabilidad del {r} %. La elección del rodamiento y la comprobación de su capacidad de carga aún no están en la app.',
-           "Vida que han d'assolir els rodaments amb una fiabilitat del {r} %. L'elecció del rodament i la comprovació de la seva capacitat de càrrega encara no són a l'app."],
     ct33: ['Shaft: bearing reactions, vertical plane (x, y)', 'Árbol: reacciones en los rodamientos, plano vertical (x, y)', 'Arbre: reaccions als rodaments, pla vertical (x, y)'],
-    cw33: ['The shaft is a beam on A and C. In this plane F<sub>r</sub> pushes the gear down and F<sub>a</sub>, acting at the pitch radius, adds the couple F<sub>a</sub> × d<sub>B</sub> / 2. Bearing A also takes the whole axial force F<sub>a</sub>.',
-           'El árbol es una viga apoyada en A y C. En este plano F<sub>r</sub> empuja la rueda hacia abajo y F<sub>a</sub>, aplicada en el radio primitivo, añade el par F<sub>a</sub> × d<sub>B</sub> / 2. El rodamiento A absorbe además toda la fuerza axial F<sub>a</sub>.',
-           "L'arbre és una biga recolzada en A i C. En aquest pla F<sub>r</sub> empeny la roda cap avall i F<sub>a</sub>, aplicada al radi primitiu, hi afegeix el parell F<sub>a</sub> × d<sub>B</sub> / 2. El rodament A absorbeix a més tota la força axial F<sub>a</sub>."],
     ct34: ['Shaft: bearing reactions, horizontal plane (x, z)', 'Árbol: reacciones en los rodamientos, plano horizontal (x, z)', 'Arbre: reaccions als rodaments, pla horitzontal (x, z)'],
-    cw34: ['F<sub>t</sub> at B and the belt pull F<sub>1</sub> + F<sub>2</sub> at D act in the same direction. A negative value means the reaction points the same way as those forces. R<sub>A</sub> and R<sub>C</sub> are the radial loads on the bearings.',
-           'F<sub>t</sub> en B y el tiro de las correas F<sub>1</sub> + F<sub>2</sub> en D actúan en el mismo sentido. Un valor negativo indica que la reacción tiene el mismo sentido que esas fuerzas. R<sub>A</sub> y R<sub>C</sub> son las cargas radiales sobre los rodamientos.',
-           'F<sub>t</sub> a B i la tracció de les corretges F<sub>1</sub> + F<sub>2</sub> a D actuen en el mateix sentit. Un valor negatiu indica que la reacció té el mateix sentit que aquestes forces. R<sub>A</sub> i R<sub>C</sub> són les càrregues radials sobre els rodaments.'],
     ct35: ['Shaft: bending moments at the critical sections', 'Árbol: momentos flectores en las secciones críticas', 'Arbre: moments flectors a les seccions crítiques'],
-    cw35: ['The two candidate sections are the gear B (the couple of F<sub>a</sub> makes the moment jump there, so the larger side is taken) and the bearing C, where the overhung pulley bends the shaft. The torque T runs from B to D, so it acts on both.',
-           'Las dos secciones candidatas son la rueda B (el par de F<sub>a</sub> hace saltar el momento, así que se toma el lado mayor) y el rodamiento C, donde la polea en voladizo flecta el árbol. El par T va de B a D, de modo que actúa en ambas.',
-           "Les dues seccions candidates són la roda B (el parell de F<sub>a</sub> fa saltar el moment, de manera que es pren el costat més gran) i el rodament C, on la politja en voladís flecta l'arbre. El parell T va de B a D, de manera que actua a totes dues."],
     ct36: ['Shaft: endurance limit S<sub>e</sub>', 'Árbol: límite de fatiga S<sub>e</sub>', 'Arbre: límit de fatiga S<sub>e</sub>'],
-    cw36: ['T04 uses S<sub>e</sub> but does not say how to get it. These are the Marin factors of Budynas and Nisbett (chapter 6): machined surface, size factor for each diameter, and reliability {r} % from the statement. The steel is an assumption of the app (the one of the T04 examples).',
-           'T04 usa S<sub>e</sub> pero no dice cómo obtenerlo. Estos son los factores de Marin de Budynas y Nisbett (capítulo 6): superficie mecanizada, factor de tamaño para cada diámetro y fiabilidad del {r} % del enunciado. El acero es una suposición de la app (el de los ejemplos de T04).',
-           "T04 fa servir S<sub>e</sub> però no diu com obtenir-lo. Aquests són els factors de Marin de Budynas i Nisbett (capítol 6): superfície mecanitzada, factor de mida per a cada diàmetre i fiabilitat del {r} % de l'enunciat. L'acer és una suposició de l'app (el dels exemples de T04)."],
     ct37: ['Shaft: stresses at the critical sections', 'Árbol: tensiones en las secciones críticas', 'Arbre: tensions a les seccions crítiques'],
-    cw37: ['The shaft turns under loads of fixed direction, so bending fully reverses each turn (M<sub>a</sub> = M, M<sub>m</sub> = 0) while the torque is steady (T<sub>m</sub> = T, T<sub>a</sub> = 0). The axial stress of F<sub>a</sub> only exists between A and B. K<sub>f</sub> and K<sub>fs</sub> are inputs of the Shaft card.',
-           'El árbol gira bajo cargas de dirección fija, así que la flexión se invierte por completo en cada vuelta (M<sub>a</sub> = M, M<sub>m</sub> = 0) mientras que el par es constante (T<sub>m</sub> = T, T<sub>a</sub> = 0). La tensión axial de F<sub>a</sub> solo existe entre A y B. K<sub>f</sub> y K<sub>fs</sub> son entradas de la tarjeta Árbol.',
-           "L'arbre gira sota càrregues de direcció fixa, de manera que la flexió s'inverteix del tot a cada volta (M<sub>a</sub> = M, M<sub>m</sub> = 0) mentre que el parell és constant (T<sub>m</sub> = T, T<sub>a</sub> = 0). La tensió axial de F<sub>a</sub> només existeix entre A i B. K<sub>f</sub> i K<sub>fs</sub> són entrades de la targeta Arbre."],
     ct38: ['Shaft: fatigue safety factor (Goodman)', 'Árbol: coeficiente de seguridad a fatiga (Goodman)', 'Arbre: coeficient de seguretat a fatiga (Goodman)'],
-    cw38: ['Goodman with the von Mises equivalents (T04). The smaller of the two sections must reach the required factor, {n} in the statement.',
-           'Goodman con los equivalentes de von Mises (T04). La menor de las dos secciones debe alcanzar el coeficiente requerido, {n} en el enunciado.',
-           "Goodman amb els equivalents de von Mises (T04). La més petita de les dues seccions ha d'assolir el coeficient requerit, {n} a l'enunciat."],
     ct39: ['Shaft: yield safety factor at the starting peak', 'Árbol: coeficiente de seguridad a fluencia en el pico de arranque', "Arbre: coeficient de seguretat a fluència en el pic d'arrencada"],
-    cw39: ['Yield check of T04 with every load multiplied by the peak factor {k}, since all the forces are proportional to the torque. The smaller value must be at least {n}.',
-           'Comprobación a fluencia de T04 con todas las cargas multiplicadas por el factor de pico {k}, ya que todas las fuerzas son proporcionales al par. El valor menor debe ser al menos {n}.',
-           "Comprovació a fluència de T04 amb totes les càrregues multiplicades pel factor de pic {k}, ja que totes les forces són proporcionals al parell. El valor més petit ha de ser almenys {n}."],
+    // under each worked step: what every symbol of its equation is
+    cv0: ["n is the shaft speed.", "n es la velocidad del árbol.", "n és la velocitat de l'arbre."],
+    cv1: ["P is the power transmitted. ω is the angular speed of the shaft.", "P es la potencia transmitida. ω es la velocidad angular del árbol.", "P és la potència transmesa. ω és la velocitat angular de l'arbre."],
+    cv2: ["d<sub>B</sub> is the pitch diameter of gear B. z<sub>B</sub> is its number of teeth.", "d<sub>B</sub> es el diámetro primitivo de la rueda B. z<sub>B</sub> es su número de dientes.", "d<sub>B</sub> és el diàmetre primitiu de la roda B. z<sub>B</sub> és el seu nombre de dents."],
+    cv3: ["T is the torque on the shaft. d<sub>B</sub> is the pitch diameter of gear B.", "T es el par en el árbol. d<sub>B</sub> es el diámetro primitivo de la rueda B.", "T és el parell a l'arbre. d<sub>B</sub> és el diàmetre primitiu de la roda B."],
+    cv4: ["F<sub>t</sub> is the tangential force on gear B. φ<sub>t</sub> is the transverse pressure angle.", "F<sub>t</sub> es la fuerza tangencial en la rueda B. φ<sub>t</sub> es el ángulo de presión transversal.", "F<sub>t</sub> és la força tangencial a la roda B. φ<sub>t</sub> és l'angle de pressió transversal."],
+    cv5: ["F<sub>t</sub> is the tangential force on gear B. β is the helix angle.", "F<sub>t</sub> es la fuerza tangencial en la rueda B. β es el ángulo de hélice.", "F<sub>t</sub> és la força tangencial a la roda B. β és l'angle d'hèlix."],
+    cv6: ["T is the torque on the shaft. D is the outer diameter of pulley D. k is the ratio of belt tensions F<sub>1</sub> / F<sub>2</sub>.", "T es el par en el árbol. D es el diámetro exterior de la polea D. k es la relación de tensiones de las correas F<sub>1</sub> / F<sub>2</sub>.", "T és el parell a l'arbre. D és el diàmetre exterior de la politja D. k és la relació de tensions de les corretges F<sub>1</sub> / F<sub>2</sub>."],
+    cv7: ["m<sub>t</sub> is the transverse module. z<sub>p</sub> is the number of teeth of the pinion.", "m<sub>t</sub> es el módulo transversal. z<sub>p</sub> es el número de dientes del piñón.", "m<sub>t</sub> és el mòdul transversal. z<sub>p</sub> és el nombre de dents del pinyó."],
+    cv8: ["z<sub>B</sub> and z<sub>p</sub> are the numbers of teeth of gear B and of the pinion. n is the shaft speed.", "z<sub>B</sub> y z<sub>p</sub> son los números de dientes de la rueda B y del piñón. n es la velocidad del árbol.", "z<sub>B</sub> i z<sub>p</sub> són els nombres de dents de la roda B i del pinyó. n és la velocitat de l'arbre."],
+    cv9: ["e<sub>L</sub> and e<sub>R</sub> are the left and right overhangs. w<sub>A</sub> and w<sub>D</sub> are the widths of bearing A and of pulley D. AB, BC and CD are the distances between the parts.", "e<sub>L</sub> y e<sub>R</sub> son los voladizos izquierdo y derecho. w<sub>A</sub> y w<sub>D</sub> son los anchos del rodamiento A y de la polea D. AB, BC y CD son las distancias entre las piezas.", "e<sub>L</sub> i e<sub>R</sub> són els voladissos esquerre i dret. w<sub>A</sub> i w<sub>D</sub> són les amplades del rodament A i de la politja D. AB, BC i CD són les distàncies entre les peces."],
+    cv10: ["φ is the transverse pressure angle.", "φ es el ángulo de presión transversal.", "φ és l'angle de pressió transversal."],
+    cv11: ["m<sub>t</sub> is the transverse module. β is the helix angle.", "m<sub>t</sub> es el módulo transversal. β es el ángulo de hélice.", "m<sub>t</sub> és el mòdul transversal. β és l'angle d'hèlix."],
+    cv12: ["K<sub>a</sub> is read from the table with the kind of driver and of driven machine.", "K<sub>a</sub> se lee en la tabla con el tipo de máquina motriz y de máquina conducida.", "K<sub>a</sub> es llegeix a la taula amb el tipus de màquina motriu i de màquina conduïda."],
+    cv13: ["F is the face width of gear B. K<sub>m</sub> is read at the next tabulated width up.", "F es el ancho de cara de la rueda B. K<sub>m</sub> se lee en el siguiente ancho tabulado.", "F és l'amplada de cara de la roda B. K<sub>m</sub> es llegeix a la següent amplada tabulada."],
+    cv14: ["ω is the angular speed of the shaft. d<sub>B</sub> is the pitch diameter of gear B. Q<sub>v</sub> is the gear quality index, which picks the curve of K<sub>v</sub>.", "ω es la velocidad angular del árbol. d<sub>B</sub> es el diámetro primitivo de la rueda B. Q<sub>v</sub> es el índice de calidad del engranaje, que elige la curva de K<sub>v</sub>.", "ω és la velocitat angular de l'arbre. d<sub>B</sub> és el diàmetre primitiu de la roda B. Q<sub>v</sub> és l'índex de qualitat de l'engranatge, que tria la corba de K<sub>v</sub>."],
+    cv15: ["J is read from the table with the number of teeth of the pinion and of the gear.", "J se lee en la tabla con el número de dientes del piñón y de la rueda.", "J es llegeix a la taula amb el nombre de dents del pinyó i de la roda."],
+    cv16: ["C<sub>p</sub> is read from the table with the materials of the pinion and of the gear.", "C<sub>p</sub> se lee en la tabla con los materiales del piñón y de la rueda.", "C<sub>p</sub> es llegeix a la taula amb els materials del pinyó i de la roda."],
+    cv17: ["F<sub>t</sub> is the tangential force. F is the face width of gear B. m is the transverse module. J is the bending geometry factor. K<sub>a</sub>, K<sub>m</sub> and K<sub>v</sub> are the application, load distribution and dynamic factors.", "F<sub>t</sub> es la fuerza tangencial. F es el ancho de cara de la rueda B. m es el módulo transversal. J es el factor geométrico de flexión. K<sub>a</sub>, K<sub>m</sub> y K<sub>v</sub> son los factores de aplicación, de distribución de carga y dinámico.", "F<sub>t</sub> és la força tangencial. F és l'amplada de cara de la roda B. m és el mòdul transversal. J és el factor geomètric de flexió. K<sub>a</sub>, K<sub>m</sub> i K<sub>v</sub> són els factors d'aplicació, de distribució de càrrega i dinàmic."],
+    cv18: ["P<sub>nom</sub> is the power transmitted. K<sub>s</sub> is the service factor. N<sub>d</sub> is the design factor.", "P<sub>nom</sub> es la potencia transmitida. K<sub>s</sub> es el factor de servicio. N<sub>d</sub> es el factor de diseño.", "P<sub>nom</sub> és la potència transmesa. K<sub>s</sub> és el factor de servei. N<sub>d</sub> és el factor de disseny."],
+    cv19: ["P<sub>d</sub> is the design power. d is the diameter of the smaller pulley.", "P<sub>d</sub> es la potencia de diseño. d es el diámetro de la polea menor.", "P<sub>d</sub> és la potència de disseny. d és el diàmetre de la politja petita."],
+    cv20: ["d is the diameter of pulley D, in inches. n is the shaft speed.", "d es el diámetro de la polea D, en pulgadas. n es la velocidad del árbol.", "d és el diàmetre de la politja D, en polzades. n és la velocitat de l'arbre."],
+    cv21: ["C is the centre distance. D and d are the diameters of the larger and of the smaller pulley.", "C es la distancia entre centros. D y d son los diámetros de la polea mayor y de la menor.", "C és la distància entre centres. D i d són els diàmetres de la politja gran i de la petita."],
+    cv22: ["L<sub>p</sub> is the pitch length of the standard belt. D and d are the diameters of the larger and of the smaller pulley.", "L<sub>p</sub> es la longitud primitiva de la correa normalizada. D y d son los diámetros de la polea mayor y de la menor.", "L<sub>p</sub> és la longitud primitiva de la corretja normalitzada. D i d són els diàmetres de la politja gran i de la petita."],
+    cv23: ["P<sub>tab</sub> is read from the table with the belt section, the diameter d of the smaller pulley and the belt speed V.", "P<sub>tab</sub> se lee en la tabla con la sección de la correa, el diámetro d de la polea menor y la velocidad V de la correa.", "P<sub>tab</sub> es llegeix a la taula amb la secció de la corretja, el diàmetre d de la politja petita i la velocitat V de la corretja."],
+    cv24: ["D and d are the diameters of the larger and of the smaller pulley. C is the centre distance. K<sub>1</sub> is read from the table with this value.", "D y d son los diámetros de la polea mayor y de la menor. C es la distancia entre centros. K<sub>1</sub> se lee en la tabla con este valor.", "D i d són els diàmetres de la politja gran i de la petita. C és la distància entre centres. K<sub>1</sub> es llegeix a la taula amb aquest valor."],
+    cv25: ["K<sub>2</sub> is read from the table with the belt section and its nominal length.", "K<sub>2</sub> se lee en la tabla con la sección de la correa y su longitud nominal.", "K<sub>2</sub> es llegeix a la taula amb la secció de la corretja i la seva longitud nominal."],
+    cv26: ["K<sub>1</sub> is the contact angle factor. K<sub>2</sub> is the length factor. P<sub>tab</sub> is the rated power of one belt. P<sub>d</sub> is the design power.", "K<sub>1</sub> es el factor de ángulo de contacto. K<sub>2</sub> es el factor de longitud. P<sub>tab</sub> es la potencia nominal de una correa. P<sub>d</sub> es la potencia de diseño.", "K<sub>1</sub> és el factor d'angle de contacte. K<sub>2</sub> és el factor de longitud. P<sub>tab</sub> és la potència nominal d'una corretja. P<sub>d</sub> és la potència de disseny."],
+    cv27: ["K<sub>c</sub> is the centrifugal constant of the belt section. V is the belt speed. T is the torque. d is the diameter of the smaller pulley. N<sub>b</sub> is the number of belts. θ is the contact angle on the smaller pulley.", "K<sub>c</sub> es la constante centrífuga de la sección de la correa. V es la velocidad de la correa. T es el par. d es el diámetro de la polea menor. N<sub>b</sub> es el número de correas. θ es el ángulo de contacto en la polea menor.", "K<sub>c</sub> és la constant centrífuga de la secció de la corretja. V és la velocitat de la corretja. T és el parell. d és el diàmetre de la politja petita. N<sub>b</sub> és el nombre de corretges. θ és l'angle de contacte a la politja petita."],
+    cv28: ["n is the speed of the wheel (pinion or gear). h is the required gear life, in hours.", "n es la velocidad de la rueda (piñón o rueda). h es la vida requerida de las ruedas, en horas.", "n és la velocitat de la roda (pinyó o roda). h és la vida requerida de les rodes, en hores."],
+    cv29: ["N is the number of load cycles.", "N es el número de ciclos de carga.", "N és el nombre de cicles de càrrega."],
+    cv30: ["N is the number of load cycles.", "N es el número de ciclos de carga.", "N és el nombre de cicles de càrrega."],
+    cv31: ["T is the working temperature. T<sub>F</sub> is the same temperature in °F.", "T es la temperatura de trabajo. T<sub>F</sub> es la misma temperatura en °F.", "T és la temperatura de treball. T<sub>F</sub> és la mateixa temperatura en °F."],
+    cv32: ["n is the shaft speed. h is the required bearing life, in hours.", "n es la velocidad del árbol. h es la vida requerida de los rodamientos, en horas.", "n és la velocitat de l'arbre. h és la vida requerida dels rodaments, en hores."],
+    cv33: ["F<sub>r</sub> and F<sub>a</sub> are the radial and axial forces on gear B. d<sub>B</sub> is the pitch diameter of gear B. AB and BC are the distances between A, B and C.", "F<sub>r</sub> y F<sub>a</sub> son las fuerzas radial y axial en la rueda B. d<sub>B</sub> es el diámetro primitivo de la rueda B. AB y BC son las distancias entre A, B y C.", "F<sub>r</sub> i F<sub>a</sub> són les forces radial i axial a la roda B. d<sub>B</sub> és el diàmetre primitiu de la roda B. AB i BC són les distàncies entre A, B i C."],
+    cv34: ["F<sub>t</sub> is the tangential force on gear B. F<sub>1</sub> and F<sub>2</sub> are the belt forces on pulley D. AB, BC and AD are the distances between the parts.", "F<sub>t</sub> es la fuerza tangencial en la rueda B. F<sub>1</sub> y F<sub>2</sub> son las fuerzas de las correas en la polea D. AB, BC y AD son las distancias entre las piezas.", "F<sub>t</sub> és la força tangencial a la roda B. F<sub>1</sub> i F<sub>2</sub> són les forces de les corretges a la politja D. AB, BC i AD són les distàncies entre les peces."],
+    cv35: ["R<sub>Ay</sub>, R<sub>Az</sub> and R<sub>Cy</sub> are the bearing reactions. F<sub>1</sub> and F<sub>2</sub> are the belt forces on pulley D. AB, BC and CD are the distances between the parts.", "R<sub>Ay</sub>, R<sub>Az</sub> y R<sub>Cy</sub> son las reacciones en los rodamientos. F<sub>1</sub> y F<sub>2</sub> son las fuerzas de las correas en la polea D. AB, BC y CD son las distancias entre las piezas.", "R<sub>Ay</sub>, R<sub>Az</sub> i R<sub>Cy</sub> són les reaccions als rodaments. F<sub>1</sub> i F<sub>2</sub> són les forces de les corretges a la politja D. AB, BC i CD són les distàncies entre les peces."],
+    cv36: ["S<sub>ut</sub> is the ultimate strength of the steel. S′<sub>e</sub> is the endurance limit of the test specimen. k<sub>a</sub>, k<sub>b</sub> and k<sub>e</sub> are the surface, size and reliability factors. d is the diameter of the section.", "S<sub>ut</sub> es la resistencia última del acero. S′<sub>e</sub> es el límite de fatiga de la probeta. k<sub>a</sub>, k<sub>b</sub> y k<sub>e</sub> son los factores de superficie, de tamaño y de fiabilidad. d es el diámetro de la sección.", "S<sub>ut</sub> és la resistència última de l'acer. S′<sub>e</sub> és el límit de fatiga de la proveta. k<sub>a</sub>, k<sub>b</sub> i k<sub>e</sub> són els factors de superfície, de mida i de fiabilitat. d és el diàmetre de la secció."],
+    cv37: ["K<sub>f</sub> and K<sub>fs</sub> are the fatigue stress concentration factors in bending and in torsion. M is the bending moment at the section. T is the torque. F<sub>a</sub> is the axial force on gear B. d is the diameter of the section.", "K<sub>f</sub> y K<sub>fs</sub> son los factores de concentración de tensiones a fatiga en flexión y en torsión. M es el momento flector en la sección. T es el par. F<sub>a</sub> es la fuerza axial en la rueda B. d es el diámetro de la sección.", "K<sub>f</sub> i K<sub>fs</sub> són els factors de concentració de tensions a fatiga en flexió i en torsió. M és el moment flector a la secció. T és el parell. F<sub>a</sub> és la força axial a la roda B. d és el diàmetre de la secció."],
+    cv38: ["σ<sub>a</sub> and τ<sub>a</sub> are the alternating stresses. σ<sub>m</sub> and τ<sub>m</sub> are the mean stresses. S<sub>e</sub> is the endurance limit. S<sub>ut</sub> is the ultimate strength of the steel.", "σ<sub>a</sub> y τ<sub>a</sub> son las tensiones alternantes. σ<sub>m</sub> y τ<sub>m</sub> son las tensiones medias. S<sub>e</sub> es el límite de fatiga. S<sub>ut</sub> es la resistencia última del acero.", "σ<sub>a</sub> i τ<sub>a</sub> són les tensions alternants. σ<sub>m</sub> i τ<sub>m</sub> són les tensions mitjanes. S<sub>e</sub> és el límit de fatiga. S<sub>ut</sub> és la resistència última de l'acer."],
+    cv39: ["S<sub>y</sub> is the yield strength of the steel. k<sub>pic</sub> is the peak load factor. σ<sub>a</sub>, σ<sub>m, axial</sub> and τ<sub>m</sub> are the stresses at the section.", "S<sub>y</sub> es el límite elástico del acero. k<sub>pic</sub> es el factor de carga de pico. σ<sub>a</sub>, σ<sub>m, axial</sub> y τ<sub>m</sub> son las tensiones en la sección.", "S<sub>y</sub> és el límit elàstic de l'acer. k<sub>pic</sub> és el factor de càrrega de pic. σ<sub>a</sub>, σ<sub>m, axial</sub> i τ<sub>m</sub> són les tensions a la secció."],
     pinionWord: ['pinion', 'piñón', 'pinyó'],
     gearWord:   ['gear', 'rueda', 'roda'],
   };
@@ -495,6 +451,7 @@
     pause:    svgIcon('', '<path d="M8 5v14M16 5v14"/>'),
     expand:   svgIcon('', '<path d="M7 4l5 5 5-5"/><path d="M7 13l5 5 5-5"/>'),
     collapse: svgIcon('', '<path d="M7 11l5-5 5 5"/><path d="M7 20l5-5 5 5"/>'),
+    info:   svgIcon('', '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),
     moon:   svgIcon('', '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>'),
   };
 
@@ -858,7 +815,185 @@
   }
 
   // Step-by-step list of how every load is obtained, with the current numbers substituted
-  function updateCalc(g) {
+  // ---- symbols in an equation that are input variables: a click on one goes to its input ----
+  // Key: the symbol, plus "_" and its subscript when it has one. Value: 'component.parameter'.
+  // Only symbols that mean the same input everywhere are listed here; a check can add its own (see SYM_IN).
+  const SYM = {
+    'P': 'drive.kW', 'n': 'drive.n', 'n_motor': 'given.motor', 'k_pic': 'drive.peak',
+    'z_B': 'gear.z', 'z_p': 'pinion.z', 'd_B': 'gear.d', 'β': 'gear.beta', 'φ': 'gear.phi', 'φ_t': 'gear.phi',
+    'w_A': 'bearingA.w', 'w_B': 'gear.w', 'w_C': 'bearingC.w', 'w_D': 'pulley.w', 'w_p': 'pinion.w',
+    'D_A': 'bearingA.D', 'D_C': 'bearingC.D', 'd_s': 'shaft.ds', 'e_L': 'shaft.overL', 'e_R': 'shaft.overR',
+    'AB': 'layout.ab', 'BC': 'layout.bc', 'CD': 'layout.cd',
+    'S_ut': 'shaft.Sut', 'S_y': 'shaft.Sy', 'K_f': 'shaft.Kf', 'K_fs': 'shaft.Kfs',
+    'N_f, min': 'given.nf', 'N_pic, min': 'given.npeak', 'Q_v': 'design.Qv', 'K_s': 'vbelt.Ks', 'k': 'vbelt.ratio',
+  };
+  // symbols whose meaning depends on the check they appear in
+  const SYM_IN = {
+    shoulder: { d: 'shaft.d' }, bearingA: { d: 'shaft.d' }, bearingC: { d: 'shaft.d' },
+    face: { F: 'gear.w' }, centre: { C: 'vbelt.C' },
+    groove: { depth: 'pulley.depth', D: 'pulley.D' }, pitch: { grooves: 'pulley.n' }, belts: { grooves: 'pulley.n' },
+  };
+  // Symbols the app calculates: symDefs lists, for every worked step, the symbols its result line defines
+  // ("Ft = 636.6 N" defines Ft). A calculated symbol in a later equation links to the nearest step before
+  // it that defines it. Filled each time the steps are rendered.
+  let symDefs = [];   // [{ key, k }] in step order
+  const SYM_UNITS = { in: 1, mm: 1, ft: 1, hp: 1, rpm: 1, lbf: 1, rad: 1, max: 1, min: 1, N: 0 };
+  const SYM_ALIAS = { m: 'm_t' };   // the checks write the transverse module as m
+  const SYM_RE = /<su[bp]>[^<]*<\/su[bp]>|<[^>]+>|([A-Za-z\u0370-\u03FF]+)(<sub>([^<]*)<\/sub>)?/g;
+  function readSymDefs(steps) {
+    symDefs = [];
+    steps.forEach((st, k) => {
+      const re = /([A-Za-z\u0370-\u03FF]+)(?:<sub>([^<]*)<\/sub>)?\s*=/g;
+      let m;
+      while ((m = re.exec(st.r || ''))) symDefs.push({ key: m[2] != null ? m[1] + '_' + m[2] : m[1], k });
+    });
+  }
+  const definingStep = (key, before) => {
+    let found = -1;
+    symDefs.forEach(d => { if (d.key === key && d.k < before) found = d.k; });
+    return symDefs.some(d => d.key === key && d.k === before) ? -1 : found;   // a step does not link to itself
+  };
+
+  // wrap every known symbol of a formula (HTML) in a button; tags and unknown symbols are left as they are.
+  // `at` is the index of the step the formula belongs to (checks come after every step).
+  function linkSymbols(html, extra, at) {
+    if (at == null) at = Infinity;
+    return html.replace(SYM_RE, (m, sym, subTag, sub, offset) => {
+      if (!sym || html[offset - 1] === '°') return m;                      // a tag, or the C of °C
+      const withSub = sub != null ? sym + '_' + sub : null;
+      const hit = (withSub && ((extra && extra[withSub]) || SYM[withSub])) || (!subTag && ((extra && extra[sym]) || SYM[sym]));
+      if (!hit || !T['p.' + hit]) {
+        const key = withSub || sym, k = definingStep(SYM_ALIAS[key] || key, at);
+        // units and words are not symbols; in the temperature step T is the temperature, not the torque
+        if (k < 0 || (!subTag && SYM_UNITS[sym]) || (key === 'T' && /K<sub>T<\/sub> = 1/.test(html))) return m;
+        const title = (t('ct' + k) || '').replace(/<[^>]+>/g, '');
+        return `<button type="button" class="sym calc" data-step="${k}" title="${k + 1}. ${title}">${m}</button>`;
+      }
+      return `<button type="button" class="sym" data-var="${hit}" title="${t('p.' + hit)}">${m}</button>`;
+    });
+  }
+  // The same formula with every symbol replaced by its current number: inputs from their sliders, calculated
+  // symbols from `calc` ({ key: number }). Returns null when a symbol has no known value, or when there is
+  // nothing to work out (no operation in the formula), so the caller can leave that line out.
+  const SYM_WORDS = { mm: 1, max: 1, min: 1, ft: 1, π: 1 };
+  function substituteSymbols(html, extra, calc) {
+    if (!/[×/+−]/.test(html.replace(/<[^>]+>/g, ''))) return null;
+    let unknown = false;
+    const out = html.replace(SYM_RE, (m, sym, subTag, sub) => {
+      if (!sym) return m;
+      const withSub = sub != null ? sym + '_' + sub : null;
+      const hit = (withSub && ((extra && extra[withSub]) || SYM[withSub])) || (!subTag && ((extra && extra[sym]) || SYM[sym]));
+      if (hit && T['p.' + hit]) { const [c, k] = hit.split('.'); return String(P[c][k]); }
+      const key = withSub || sym;
+      if (calc && typeof calc[key] === 'number' && isFinite(calc[key])) return String(Math.round(calc[key] * 100) / 100);
+      if (!subTag && SYM_WORDS[sym]) return m;
+      unknown = true;
+      return m;
+    });
+    return unknown ? null : out;
+  }
+
+  // ---- equations written the way they are written by hand: a / b becomes a stacked fraction ----
+  // The formulas of this file are plain HTML strings such as "2 × T / d<sub>B</sub>". stackFractions()
+  // reads one and rebuilds every " / " (with spaces; units like ft/min are left alone) as a fraction:
+  // the numerator is everything before it in the same term, the denominator what follows up to the
+  // next × or the end of the term. Terms end at + − = ≤ ≥ < > , ; : and at the enclosing bracket.
+  function stackFractions(html) {
+    if (html.indexOf(' / ') < 0) return html;
+    // 1. tokens
+    const toks = [];
+    const TAG = /<button[^>]*>[\s\S]*?<\/button>|<su[bp]>[\s\S]*?<\/su[bp]>|<\/?[a-zA-Z][^>]*>/g;
+    const text = str => {
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (ch === '(' ) toks.push({ t: 'open' });
+        else if (ch === ')') toks.push({ t: 'close' });
+        else if (ch === '|') toks.push({ t: 'bar' });
+        else if (ch === '/' && str[i - 1] === ' ' && str[i + 1] === ' ') toks.push({ t: 'div' });
+        else if (ch === '×') toks.push({ t: 'mul', v: ch });
+        else if ('+−=≤≥<>,;:→'.indexOf(ch) >= 0) toks.push({ t: 'sep', v: ch });
+        else if (ch === ' ' || ch === ' ') toks.push({ t: 'sp', v: ch });
+        else if (toks.length && toks[toks.length - 1].t === 'txt') toks[toks.length - 1].v += ch;
+        else toks.push({ t: 'txt', v: ch });
+      }
+    };
+    let last = 0, m;
+    while ((m = TAG.exec(html))) {
+      text(html.slice(last, m.index));
+      toks.push({ t: 'txt', v: m[0] });
+      last = m.index + m[0].length;
+    }
+    text(html.slice(last));
+
+    // 2. tree: brackets and |bars| become groups
+    let pos = 0;
+    const parse = closer => {
+      const out = [];
+      while (pos < toks.length) {
+        const k = toks[pos++];
+        if (k.t === 'close') { if (closer === 'close') return out; out.push({ t: 'txt', v: ')' }); }
+        else if (k.t === 'bar') {
+          if (closer === 'bar') return out;
+          out.push({ t: 'grp', o: '|', c: '|', kids: parse('bar') });
+        } else if (k.t === 'open') out.push({ t: 'grp', o: '(', c: ')', kids: parse('close') });
+        else out.push(k);
+      }
+      return out;
+    };
+    const tree = parse(null);
+
+    // 3. render
+    const trim = list => {
+      let a = 0, b = list.length;
+      while (a < b && list[a].t === 'sp') a++;
+      while (b > a && list[b - 1].t === 'sp') b--;
+      return list.slice(a, b);
+    };
+    const one = n => (n.t === 'grp' ? n.o + seq(n.kids) + n.c : n.t === 'html' ? n.v : n.v || '');
+    const side = list => {                       // numerator or denominator: a lone (bracket) loses its brackets
+      const l = trim(list);
+      return l.length === 1 && l[0].t === 'grp' && l[0].o === '(' ? seq(l[0].kids) : l.map(one).join('');
+    };
+    const term = items => {
+      for (;;) {
+        const i = items.findIndex(n => n.t === 'div');
+        if (i < 0) break;
+        let j = i + 1;
+        while (j < items.length && items[j].t !== 'mul' && items[j].t !== 'div') j++;
+        const num = items.slice(0, i), den = items.slice(i + 1, j);
+        const lead = [];                          // keep the spaces in front of the fraction
+        while (num.length && num[0].t === 'sp') lead.push(num.shift());
+        const frac = { t: 'html', v: `<span class="frac"><span class="fnum">${side(num)}</span><span class="fden">${side(den)}</span></span>` };
+        const tail = den.length && den[den.length - 1].t === 'sp' ? [{ t: 'sp', v: ' ' }] : [];
+        items = lead.concat([frac], tail, items.slice(j));
+      }
+      return items.map(one).join('');
+    };
+    function seq(nodes) {
+      let out = '', cur = [];
+      nodes.forEach(n => {
+        if (n.t === 'sep') { out += term(cur) + n.v; cur = []; } else cur.push(n);
+      });
+      return out + term(cur);
+    }
+    return seq(tree);
+  }
+
+  // open the card of a variable, bring its row into view and flash it
+  function goToVariable(id) {
+    const inp = inputs.find(i => i.comp + '.' + i.key === id);
+    if (!inp) return;
+    if (document.body.classList.contains('no-vars')) $('#btnVars').click();
+    const card = inp.row.closest('.card');
+    if (card && card.classList.contains('collapsed')) card.querySelector('h2').click();
+    inp.row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    inp.row.classList.remove('flash');
+    void inp.row.offsetWidth;
+    inp.row.classList.add('flash');
+  }
+
+  let noFigs = false;   // true while the steps are recomputed only to compare their numbers
+  function calcSteps(g) {
     const L = g.loads, gr = g.gear, pn = g.pinion, s = P.shaft;
     const f = (v, n) => Number(v).toFixed(n == null ? 1 : n);
     const omega = SPEED_RPM * 2 * Math.PI / 60;
@@ -898,7 +1033,7 @@
     ];
 
     // ---- gear check: values read from the course tables, each shown on the table it comes from ----
-    const fig = (id, picks, label) => (typeof TableFigure !== 'undefined' ? TableFigure.render(id, picks, label) : '');
+    const fig = (id, picks, label) => (!noFigs && typeof TableFigure !== 'undefined' ? TableFigure.render(id, picks, label) : '');
     if (typeof EQ !== 'undefined') {
       const fill = (key, map) => Object.keys(map).reduce((str, k) => str.replace('{' + k + '}', map[k]), t(key));
       const phiDeg = P.gear.phi, psi = gr.beta, F = P.gear.w;
@@ -910,7 +1045,6 @@
         f: 'N<sub>min</sub> = 2 / sin² φ',
         s: `2 / sin² ${phiDeg}° = ${f(nMin, 1)}`,
         r: `N<sub>min</sub> = ${nTab}`,
-        w: fill(pn.z >= nTab ? 'cw10ok' : 'cw10bad', { z: pn.z }),
         fig: fig('minTeeth', EQ.MIN_TEETH_VS_RACK[phiDeg] ? [{ row: phiDeg, col: 'N' }] : [], 'Nmin = ' + nTab),
       });
 
@@ -993,7 +1127,6 @@
         steps.push({
           f: fill('secSel', { P: f(Pd, 2), d: f(small, 2), s: sec }),
           r: `${sec}  (d<sub>min</sub> = ${f(S.dMin, 1)} in = ${f(S.dMin * IN, 0)} mm)`,
-          w: fill(small >= S.dMin ? 'cw19ok' : 'cw19bad', { m: f(S.dMin, 1) }),
           fig: fig('vbeltSections', [{ row: sec, col: 'hp' }, { row: sec, col: 'dMin' }], t('c.vbeltSection') + ' ' + sec),
         });
 
@@ -1013,7 +1146,6 @@
           f: 'L<sub>p</sub> = 2C + π (D + d) / 2 + (D − d)² / (4C)',
           s: `2 × ${f(Cwant, 2)} + π (${f(big, 2)} + ${f(small, 2)}) / 2 + (${f(big, 2)} − ${f(small, 2)})² / (4 × ${f(Cwant, 2)}) = ${f(LpWant, 1)} in`,
           r: `${f(LpWant, 1)} − ${add} = ${f(LpWant - add, 1)} in → ${sec}${Lin}  (L<sub>p</sub> = ${f(Lp, 1)} in)`,
-          w: fill('cw21', { a: add, s: sec }),
           fig: fig('vbeltLengths', [{ row: sec }], sec + Lin),
         });
 
@@ -1022,7 +1154,6 @@
           f: 'C = 0.25 { [L<sub>p</sub> − π/2 (D + d)] + √( [L<sub>p</sub> − π/2 (D + d)]² − 2 (D − d)² ) }',
           s: `L<sub>p</sub> = ${f(Lp, 1)} in ,  D = ${f(big, 2)} in ,  d = ${f(small, 2)} in`,
           r: `C = ${f(C, 2)} in = ${f(C * IN, 0)} mm`,
-          w: t(EQ.vBeltCenterDistanceOk(C, big, small) ? 'cw22ok' : 'cw22bad'),
         });
 
         // rated power: mark the cells the interpolation uses
@@ -1069,7 +1200,6 @@
             f: 'P<sub>a</sub> = K<sub>1</sub> × K<sub>2</sub> × P<sub>tab</sub> ,  N<sub>b</sub> ≥ P<sub>d</sub> / P<sub>a</sub>',
             s: `${f(K1, 3)} × ${f(K2, 2)} × ${f(Ptab, 2)} = ${f(Pa, 2)} hp ,  ${f(Pd, 2)} / ${f(Pa, 2)} = ${f(Pd / Pa, 2)}`,
             r: `N<sub>b</sub> = ${Nb}`,
-            w: fill(grooves >= Nb ? 'cw26ok' : 'cw26bad', { n: grooves, nb: Nb, sf: f(EQ.vBeltSafetyFactor(Pa, Math.max(Nb, 1), Pnom, Ks), 2) }),
           });
 
           const theta = EQ.vBeltContactAngle(big, small, C), Fc = EQ.vBeltCentrifugalForce(sec, V);
@@ -1079,12 +1209,11 @@
             f: 'F<sub>c</sub> = K<sub>c</sub> (V/1000)² ,  ΔF = 2T / (d × N<sub>b</sub>) ,  F<sub>1</sub> = F<sub>c</sub> + ΔF × e<sup>0.5123θ</sup> / (e<sup>0.5123θ</sup> − 1) ,  F<sub>2</sub> = F<sub>1</sub> − ΔF',
             s: `F<sub>c</sub> = ${EQ.V_BELT_KB_KC[sec].Kc} × ${f(V / 1000, 3)}² = ${f(Fc, 2)} lbf ,  T = ${f(T, 1)} lbf in ,  ΔF = ${f(dF, 1)} lbf ,  θ = ${f(theta, 3)} rad`,
             r: `F<sub>1</sub> = ${f(F1 * LBF, 0)} N ,  F<sub>2</sub> = ${f(F2 * LBF, 0)} N ,  F<sub>i</sub> = ${f(Fi * LBF, 0)} N`,
-            w: fill('cw27', { tot: f(Nb * (F1 + F2) * LBF, 0) }),
             fig: fig('vbeltKc', [{ row: sec, col: 'Kc' }], 'Kc = ' + EQ.V_BELT_KB_KC[sec].Kc),
           });
         } else {
-          steps.push({ f: 'P<sub>a</sub> = K<sub>1</sub> × K<sub>2</sub> × P<sub>tab</sub>', r: `P<sub>a</sub>: ${t('ptNone')}`, w: ' ' });
-          steps.push({ f: 'F<sub>1</sub> , F<sub>2</sub>', r: t('ptNone'), w: ' ' });
+          steps.push({ f: 'P<sub>a</sub> = K<sub>1</sub> × K<sub>2</sub> × P<sub>tab</sub>', r: `P<sub>a</sub>: ${t('ptNone')}` });
+          steps.push({ f: 'F<sub>1</sub> , F<sub>2</sub>', r: t('ptNone') });
         }
       }
 
@@ -1126,7 +1255,6 @@
           f: 'L = 60 × n × h / 10<sup>6</sup>',
           s: `60 × ${SPEED_RPM} rpm × ${P.given.bearLife} h / 10<sup>6</sup>`,
           r: `L = ${f(Lrev, 0)} × 10<sup>6</sup> rev`,
-          w: fill('cw32', { r: P.given.relBear }),
         });
       }
 
@@ -1153,7 +1281,6 @@
           f: 'S<sub>e</sub> = k<sub>a</sub> × k<sub>b</sub> × k<sub>e</sub> × S′<sub>e</sub> ,  S′<sub>e</sub> = 0.5 × S<sub>ut</sub> ,  k<sub>a</sub> = 4.51 × S<sub>ut</sub><sup>−0.265</sup> ,  k<sub>b</sub> = 1.24 × d<sup>−0.107</sup>',
           s: `S′<sub>e</sub> = ${f(EQ.enduranceLimitSteel(sh.Sut), 1)} MPa ,  k<sub>a</sub> = ${f(sB.ka, 3)} ,  k<sub>e</sub> = ${f(sB.ke, 3)} ,  k<sub>b</sub> = ` + each(x => `${f(x.kb, 3)} (${x.id}, d = ${f(x.d, 0)} mm)`),
           r: each(x => `S<sub>e, ${x.id}</sub> = ${f(x.Se, 1)} MPa`),
-          w: fill('cw36', { r: P.given.relShaft }),
         });
         steps.push({
           f: 'σ<sub>a</sub> = K<sub>f</sub> × 32 M / (π d³) ,  τ<sub>m</sub> = K<sub>fs</sub> × 16 T / (π d³) ,  σ<sub>m, axial</sub> = K<sub>f</sub> × 4 F<sub>a</sub> / (π d²)',
@@ -1164,28 +1291,38 @@
           f: '1 / N<sub>f</sub> = σ′<sub>a</sub> / S<sub>e</sub> + σ′<sub>m</sub> / S<sub>ut</sub> ,  σ′<sub>a</sub> = √(σ<sub>a</sub>² + 3 τ<sub>a</sub>²) ,  σ′<sub>m</sub> = √((σ<sub>m</sub> + σ<sub>m, axial</sub>)² + 3 τ<sub>m</sub>²)',
           s: each(x => `${x.id}: ${f(x.saEq, 1)} / ${f(x.Se, 1)} + ${f(x.smEq, 1)} / ${sh.Sut}`),
           r: each(x => `N<sub>f, ${x.id}</sub> = ${f(x.Nf, 2)}`) + ` ;  N<sub>f</sub> = ${f(a.Nf, 2)}`,
-          w: fill('cw38', { n: P.given.nf }),
         });
         steps.push({
           f: 'N<sub>pic</sub> = S<sub>y</sub> / σ′<sub>max</sub> ,  σ′<sub>max</sub> = k<sub>pic</sub> × √((σ<sub>a</sub> + σ<sub>m, axial</sub>)² + 3 τ<sub>m</sub>²)',
           s: each(x => `${x.id}: ${sh.Sy} / (${P.drive.peak} × ${f(x.smax / P.drive.peak, 1)}) = ${sh.Sy} / ${f(x.smax, 1)}`),
           r: each(x => `N<sub>pic, ${x.id}</sub> = ${f(x.Ny, 2)}`) + ` ;  N<sub>pic</sub> = ${f(a.Ny, 2)}`,
-          w: fill('cw39', { k: P.drive.peak, n: P.given.npeak }),
         });
       }
     }
 
+    return steps;
+  }
+
+  function updateCalc(g) {
+    const steps = calcSteps(g);
+    readSymDefs(anyLocked() ? steps : []);
+    // The steps are worked with the fixed values as their starting point, so they are only shown once
+    // something is fixed. The design checks are always shown.
+    if (!anyLocked()) {
+      $('#calcList').innerHTML = `<p class="calc-empty">${t('calcLocked')}</p>` + checksHtml(g);
+      return;
+    }
     $('#calcList').innerHTML = steps.map((st, k) => {
-      const why = (st.w || (T['cw' + k] ? t('cw' + k) : ''))
-        .replace('{n}', SPEED_RPM).replace('{i}', (P.given.motor / SPEED_RPM).toFixed(3)).replace('{m}', P.given.motor)
-        .replace('{phi}', P.gear.phi);
+      const why = T['cv' + k] ? t('cv' + k) : '';
       return `
-      <div class="calc-step">
+      <div class="calc-step" id="step-${k}">
         <div class="num">${k + 1}</div>
         <h3>${t('ct' + k)}</h3>
-        <div class="formula">${st.f}</div>
-        ${st.s ? `<div class="subst">= ${st.s}</div>` : ''}
-        <div class="result">${st.r}</div>
+        <div class="work">
+          <div class="formula">${stackFractions(linkSymbols(st.f, null, k))}</div>
+          ${st.s ? `<div class="subst">= ${stackFractions(st.s)}</div>` : ''}
+          <div class="result">${st.r}</div>
+        </div>
         ${st.fig || ''}
         ${why ? `<div class="why">${why}</div>` : ''}
       </div>`;
@@ -1205,6 +1342,11 @@
       return;
     }
     two = new Two({ type: Two.Types.svg, width: 100, height: 100, autostart: false }).appendTo($('#view2d'));
+    // a click on a component selects it; a click on the empty drawing clears the selection
+    $('#view2d').addEventListener('click', e => {
+      const hit = e.target.closest ? e.target.closest('[data-part]') : null;
+      select(hit ? hit.dataset.part : null);
+    });
   }
 
   function draw2D(g) {
@@ -1217,19 +1359,26 @@
     two.height = H;
     two.clear();
 
+    // `part` is the component being drawn; its shapes are tagged so a click on them selects it,
+    // and the selected component is outlined in the selection colour
+    let part = null;
+    const tagged = [];
+    const tag = shape => { if (part) tagged.push([shape, part]); return shape; };
+
     // ---- drawing helpers ----
     const style = (shape, fill, stroke, lw) => {
       shape.fill = fill || 'none';
       shape.stroke = stroke || INK;
       shape.linewidth = lw == null ? 1.2 : lw;
-      return shape;
+      if (part && part === selected) { shape.stroke = C.select; shape.linewidth += 1.6; }
+      return tag(shape);
     };
     const line = (x1, y1, x2, y2, stroke, lw, dashes) => {
       const ln = two.makeLine(x1, y1, x2, y2);
       ln.stroke = stroke || INK;
       ln.linewidth = lw || 1;
       if (dashes) ln.dashes = dashes;
-      return ln;
+      return tag(ln);
     };
     const poly = (pts, fill, stroke, lw, closed) => {
       const path = new Two.Path(pts.map(p => new Two.Anchor(p[0], p[1])), closed !== false, false);
@@ -1243,7 +1392,7 @@
       t.family = 'system-ui, Segoe UI, sans-serif';
       if (italic) t.style = 'italic';
       if (weight) t.weight = weight;
-      return t;
+      return tag(t);
     };
     const arrow = (x1, y1, x2, y2, color, lw) => {
       color = color || FORCE;
@@ -1271,6 +1420,7 @@
 
     // ===================== SIDE VIEW =====================
     if (visible.shaft) {
+      part = 'shaft';
       rectX(g.x0, g.x1, g.d / 2, C.steel);
       g.steps.forEach(st => rectX(st[0], st[1], st[2], C.steel2));
     }
@@ -1295,12 +1445,14 @@
     };
 
     if (visible.gear) {
+      part = 'gear';
       const xl = gear.x - gear.w / 2, xr = gear.x + gear.w / 2;
       gearFace(gear, 0, C.fill.gear, colorOf.gear);
       [gear.r, -gear.r].forEach(r => line(X(xl) - 6, Y(r), X(xr) + 6, Y(r), C.fill.pitch, 0.8, [8, 3, 2, 3]));
     }
 
     if (visible.pinion) {
+      part = 'pinion';
       const pn = g.pinion, stub = 50, rs = pn.rf * 0.55;
       style(two.makeRectangle(X(pn.x - pn.w / 2 - stub / 2), Y(pn.yc), stub * s, 2 * rs * s), C.steel, INK, 1.2);
       gearFace(pn, pn.yc, C.fill.pinion, colorOf.pinion);
@@ -1309,6 +1461,7 @@
     }
 
     if (visible.pulley) {
+      part = 'pulley';
       const prof = pulleyProfile(pl);
       [1, -1].forEach(sgn => {
         poly(prof.map(p => [X(pl.x + p[1]), Y(sgn * p[0])]), C.fill.pulleyHub, colorOf.pulley, 1.4);
@@ -1317,6 +1470,7 @@
 
     [['bearingA', g.bA], ['bearingC', g.bC]].forEach(([id, b]) => {
       if (!visible[id]) return;
+      part = id;
       const col = colorOf[id];
       const xl = b.x - b.w / 2, xr = b.x + b.w / 2, cx = (X(xl) + X(xr)) / 2;
       [1, -1].forEach(sgn => {
@@ -1330,18 +1484,23 @@
     });
 
     // centre line
+    part = null;
     line(X(g.x0) - 18, cy, X(g.x1) + 18, cy, INK, 0.8, [14, 4, 3, 4]);
 
     // labels
     if (opts.labels) {
       const lab = (id, str, x, r) => {
+        part = id;
         if (visible[id]) text(str, X(x), Y(r) - 12, 15, colorOf[id], false, 700);
+        part = null;
       };
       lab('bearingA', 'A', g.xA, g.bA.rOut);
       lab('bearingC', 'C', g.xC, g.bC.rOut);
       lab('pulley', 'D', g.xD, pl.R);
+      part = 'gear';
       if (visible.gear) text('B', X(g.xB) + gear.w * s / 2 + 12, Y(gear.ra) + 6, 15, colorOf.gear, false, 700);
 
+      part = null;
       // coordinate axes
       const ax = X(g.x0) - 26, ay = cy;
       arrow(ax, ay, ax, ay - 34, INK, 1.2);
@@ -1392,6 +1551,7 @@
     let pulls = null;                                           // [[x, y, ux, uy] for F2 (top), same for F1 (bottom)]
 
     if (drv) {
+      part = 'vbelt';
       // open belt: the two outer tangents between the pitch circles (screen x = ex − z, screen y = ey − y)
       const Cpx = drv.C * se, R2 = drv.R2 * se, rp2 = Math.max(2, (drv.R2 - pl.depth / 2) * se);
       const a = Math.asin(Math.max(-1, Math.min(1, (rp2 - rp) / Cpx))), ca = Math.cos(a), sa = Math.sin(a);
@@ -1426,6 +1586,7 @@
         return [b[0] + (b[2] - b[0]) * 0.45, b[1] + (b[3] - b[1]) * 0.45, (b[2] - b[0]) / len, (b[3] - b[1]) / len];
       };
       pulls = [anchor(top), anchor(bot)];
+      part = null;
     } else if (visible.pulley) {
       // drive hidden: just two belt stubs leaving towards +z (left), slightly converging
       const conv = 0.12, beltLen = pl.R * 1.5 * se;
@@ -1437,6 +1598,7 @@
     }
 
     if (visible.pulley) {
+      part = 'pulley';
       style(two.makeCircle(ex, ey, R), C.fill.pulley, colorOf.pulley, 1.5);
       const gr = two.makeCircle(ex, ey, (pl.R - pl.depth) * se);
       style(gr, 'none', colorOf.pulley, 0.9);
@@ -1453,6 +1615,7 @@
         arrow(arc[n - 2][0], arc[n - 2][1], arc[n - 1][0], arc[n - 1][1], INK, 1.2);
       }
     }
+    part = null;
     if (opts.forces && pulls && visible.pulley) {
       const [f2, f1] = pulls, L = 40;
       arrow(f2[0], f2[1], f2[0] + f2[2] * L, f2[1] + f2[3] * L, FORCE);
@@ -1461,10 +1624,12 @@
       text('F1', f1[0] + f1[2] * L * 0.5, f1[1] + f1[3] * L * 0.5 + 17, 13, FORCE, true);
     }
     if (visible.shaft) {
+      part = 'shaft';
       style(two.makeCircle(ex, ey, g.d / 2 * se), C.steel3, INK, 1.2);
       const k = g.d * 0.13 * se;                                   // key
       style(two.makeRectangle(ex, ey + g.d / 2 * se, 2 * k, 2 * k), C.paper, INK, 1);
     }
+    part = null;
     line(ex - R - 14, ey, ex + R + 14, ey, INK, 0.7, [14, 4, 3, 4]);
     line(ex, ey - R - 14, ex, ey + R + 14, INK, 0.7, [14, 4, 3, 4]);
     if (opts.labels) {
@@ -1474,12 +1639,33 @@
     }
 
     two.update();
+    // the SVG elements exist now: mark each with its component so a click can find it
+    tagged.forEach(([shape, id]) => {
+      const elem = shape._renderer && shape._renderer.elem;
+      if (elem) { elem.dataset.part = id; elem.style.cursor = 'pointer'; }
+    });
   }
 
   // ------------------------------------------------------------------
   // 3D view (Three.js)
   // ------------------------------------------------------------------
-  let view3d = null;   // { rebuild(g), resize() }
+  let view3d = null;   // { rebuild(g), resize(), highlight() }
+
+  // The selected component (its id in SCHEMA) or null. It is highlighted in both views and in its card.
+  let selected = null;
+  function select(id) {
+    selected = id && cards[id] ? id : null;
+    Object.keys(cards).forEach(k => cards[k].classList.toggle('selected', k === selected));
+    if (selected) {
+      const card = cards[selected];
+      card.classList.remove('collapsed');
+      card.querySelector('h2').setAttribute('aria-expanded', 'true');
+      updateExpandButton();
+      card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    draw2D(derive());
+    if (view3d) view3d.highlight();
+  }
 
   async function init3D() {
     let THREE, OrbitControls;
@@ -1503,6 +1689,44 @@
     const camera = new THREE.PerspectiveCamera(40, 1, 1, 10000);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    // left drag orbits, wheel zooms, middle or right drag pans
+    controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
+    const canvas = renderer.domElement;
+    canvas.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });   // no browser auto-scroll
+
+    // the component a mesh belongs to: its own tag, or the tag of the mesh it is attached to
+    const partOf = o => {
+      for (; o; o = o.parent) if (o.userData && o.userData.part) return o.userData.part;
+      return null;
+    };
+    const part3 = (mesh, id) => { mesh.userData.part = id; return mesh; };
+
+    // a left click that did not turn into a drag selects the component under the pointer
+    const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+    let down = null;
+    canvas.addEventListener('pointerdown', e => { down = e.button === 0 ? [e.clientX, e.clientY] : null; });
+    canvas.addEventListener('pointerup', e => {
+      if (!down || e.button !== 0) return;
+      const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
+      down = null;
+      if (moved > 4) return;
+      const r = canvas.getBoundingClientRect();
+      ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+      ray.setFromCamera(ptr, camera);
+      const hit = ray.intersectObjects([spin, fixed, drive], true).find(h => partOf(h.object));
+      select(hit ? partOf(hit.object) : null);
+    });
+
+    // the selected component glows in the selection colour
+    function highlight() {
+      [spin, fixed, drive].forEach(grp => grp.traverse(o => {
+        if (!o.material || !o.material.emissive) return;
+        const on = !!selected && partOf(o) === selected;
+        o.material.emissive.set(on ? C.select : 0x000000);
+        o.material.emissiveIntensity = on ? 0.5 : 1;
+      }));
+    }
+    let lastTarget = '';
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0x8a94a0, 1.6));
     const sun = new THREE.DirectionalLight(0xffffff, 2.2);
@@ -1636,7 +1860,7 @@
         const pn = g.pinion;
         pinionMesh = new THREE.Mesh(helicalGear(pn), mat(colorOf.pinion, { flatShading: true, side: THREE.DoubleSide }));
         pinionMesh.position.set(-pn.yc, pn.x, 0);        // local −X is world +Y: sits on top of B
-        pinionMesh.userData = { ratio: g.gear.z / pn.z, pitchG: 2 * Math.PI / g.gear.z };
+        pinionMesh.userData = { ratio: g.gear.z / pn.z, pitchG: 2 * Math.PI / g.gear.z, part: 'pinion' };
         const stub = 50, rs = pn.rf * 0.55;
         const motorShaft = new THREE.Mesh(new THREE.CylinderGeometry(rs, rs, stub, 32),
           mat(colorOf.shaft, { metalness: 0.7, roughness: 0.35 }));
@@ -1647,14 +1871,14 @@
 
       if (visible.shaft) {
         const m = mat(colorOf.shaft, { metalness: 0.7, roughness: 0.35 });
-        const cyl = (xa, xb, r) => at(new THREE.Mesh(new THREE.CylinderGeometry(r, r, xb - xa, 48), m), (xa + xb) / 2);
+        const cyl = (xa, xb, r) => part3(at(new THREE.Mesh(new THREE.CylinderGeometry(r, r, xb - xa, 48), m), (xa + xb) / 2), 'shaft');
         spin.add(cyl(g.x0, g.x1, g.d / 2));
         g.steps.forEach(st => spin.add(cyl(st[0], st[1], st[2])));
       }
 
       if (visible.gear) {
-        spin.add(at(new THREE.Mesh(helicalGear(g.gear),
-          mat(colorOf.gear, { flatShading: true, side: THREE.DoubleSide })), g.gear.x));
+        spin.add(part3(at(new THREE.Mesh(helicalGear(g.gear),
+          mat(colorOf.gear, { flatShading: true, side: THREE.DoubleSide })), g.gear.x), 'gear'));
       }
 
       if (visible.pulley) {
@@ -1662,7 +1886,7 @@
         const pulleyMesh = new THREE.Mesh(new THREE.LatheGeometry(pts, 96),
           mat(colorOf.pulley, { flatShading: true, side: THREE.DoubleSide }));
         addWebHoles(pulleyMesh, g.pulley);
-        spin.add(at(pulleyMesh, g.pulley.x));
+        spin.add(part3(at(pulleyMesh, g.pulley.x), 'pulley'));
       }
 
       // V-belt drive: the driven pulley on its own shaft at +z, and one belt loop per groove
@@ -1675,7 +1899,7 @@
         drivenMesh = new THREE.Mesh(new THREE.LatheGeometry(pts2, 96),
           mat(colorOf.vbelt, { flatShading: true, side: THREE.DoubleSide }));
         drivenMesh.position.set(0, pl.x, v.C);                    // local z is world z: the drive runs towards +z
-        drivenMesh.userData = { ratio: pl.R / v.R2 };
+        drivenMesh.userData = { ratio: pl.R / v.R2, part: 'vbelt' };
         addWebHoles(drivenMesh, pl2);
         drivenMesh.add(new THREE.Mesh(new THREE.CylinderGeometry(bore2, bore2, pl.w + 90, 32),
           mat(colorOf.shaft, { metalness: 0.7, roughness: 0.35 })));
@@ -1706,7 +1930,7 @@
           const xg = pl.x - pl.w / 2 + pitch * (i + 0.5);
           // world (x, y, z) is local (−y, x, z) inside `root`
           const curve = new THREE.CatmullRomCurve3(loop.map(q => new THREE.Vector3(-q[0], xg, q[1])), true, 'centripetal');
-          drive.add(new THREE.Mesh(new THREE.TubeGeometry(curve, loop.length * 2, tubeR, 6, true), beltMat));
+          drive.add(part3(new THREE.Mesh(new THREE.TubeGeometry(curve, loop.length * 2, tubeR, 6, true), beltMat), 'vbelt'));
           curves.push(curve);
         }
         // light marks riding on the belts; the animation loop moves them along at the belt speed
@@ -1715,6 +1939,7 @@
         const marks = new THREE.InstancedMesh(new THREE.SphereGeometry(tubeR * 1.28, 10, 8),
           mat(C.beltMark, { metalness: 0.05, roughness: 0.9 }), per * curves.length);
         marks.frustumCulled = false;
+        marks.userData.part = 'vbelt';
         drive.add(marks);
         beltRun = { curves, len, per, r1, marks };
       }
@@ -1722,8 +1947,8 @@
       [['bearingA', g.bA], ['bearingC', g.bC]].forEach(([id, b]) => {
         if (!visible[id]) return;
         const ring = mat(colorOf[id], { metalness: 0.6, roughness: 0.3 });
-        fixed.add(at(new THREE.Mesh(tube(b.rOut - b.t, b.rOut, b.w), ring), b.x));
-        spin.add(at(new THREE.Mesh(tube(b.rIn, b.rIn + b.t, b.w), ring), b.x));
+        fixed.add(part3(at(new THREE.Mesh(tube(b.rOut - b.t, b.rOut, b.w), ring), b.x), id));
+        spin.add(part3(at(new THREE.Mesh(tube(b.rIn, b.rIn + b.t, b.w), ring), b.x), id));
         const rBall = Math.min(b.rBall, b.w * 0.45);
         const count = Math.max(6, Math.floor(2 * Math.PI * b.rMid / (rBall * 2.5)));
         const ballGeo = new THREE.SphereGeometry(rBall, 20, 14);
@@ -1732,7 +1957,7 @@
           const a = i / count * Math.PI * 2;
           const ball = new THREE.Mesh(ballGeo, ballMat);
           ball.position.set(b.rMid * Math.cos(a), b.x, b.rMid * Math.sin(a));
-          spin.add(ball);
+          spin.add(part3(ball, id));
         }
       });
 
@@ -1784,7 +2009,10 @@
         });
       }
 
-      controls.target.set((g.x0 + g.x1) / 2, 0, visible.vbelt ? g.vbelt.C / 2 : 0);
+      highlight();
+      // re-centre the orbit only when the model's centre moved, so a pan survives ordinary redraws
+      const tgt = [(g.x0 + g.x1) / 2, 0, visible.vbelt ? g.vbelt.C / 2 : 0];
+      if (tgt.join() !== lastTarget) { lastTarget = tgt.join(); controls.target.set(tgt[0], tgt[1], tgt[2]); }
     }
 
     function resize() {
@@ -1837,7 +2065,7 @@
       renderer.render(scene, camera);
     });
 
-    view3d = { rebuild, resize };
+    view3d = { rebuild, resize, highlight };
   }
 
   // ------------------------------------------------------------------
@@ -1963,16 +2191,22 @@
   function checksHtml(g) {
     let v;
     try { v = vbeltDesign(); } catch (e) { return ''; }
+    // values of the calculated symbols the check formulas use
+    const calc = { m: g.gear.m, 'm_t': g.gear.m, 'r_f': g.gear.rf, 'r_seat': seatRadius(),
+                   't_R': g.gear.rf - seatRadius(), 'h_t': 2.25 * g.gear.m, 'N_min': minPinionTeeth() };
     const items = CHECKS.map(c => {
       let ok = false, d = { f: '', s: '' };
       try { ok = !!c[1](g, v); d = c[2](g, v); } catch (e) { /* shown as not met */ }
+      const known = d.f ? substituteSymbols(d.f, SYM_IN[c[0]], calc) : null;   // the formula with its numbers
       return `
       <div class="calc-step calc-check ${ok ? 'ok' : 'bad'}" id="check-${c[0]}">
         <div class="num">${ok ? '✓' : '✗'}</div>
         <h3>${t('k.' + c[0])}</h3>
-        <div class="formula">${d.f}</div>
-        <div class="subst">${d.s}</div>
+        <div class="formula">${stackFractions(linkSymbols(d.f, SYM_IN[c[0]]))}</div>
+        ${known ? `<div class="subst known">${stackFractions(known)}</div>` : ''}
+        <div class="subst">${stackFractions(d.s)}</div>
         <div class="result">${t(ok ? 'met' : 'notMet')}</div>
+        ${T['y.' + c[0]] ? `<details class="check-why"><summary>${ICON.info}<span>${t('whyRule')}</span></summary><p>${t('y.' + c[0])}</p></details>` : ''}
       </div>`;
     }).join('');
     return `<h2 class="calc-heading">${t('checksTitle')}</h2>${items}`;
@@ -1995,13 +2229,100 @@
       + `<b>${results[i] ? '✓' : '✗'}</b><span>${t('k.' + c[0])}</span></button>`).join('');
   }
 
+  // bandOf['comp.key'] = { runs: [[from, to], ...], ok } for a free variable some check limits,
+  // { any: true } for a free variable no check limits. Filled by updateBands().
+  let bandOf = {};
+  let checkNow = {};   // checkNow[checkId] = that check written with the current numbers
+
+  // Under every worked step, list the variables its numbers depend on: the fixed ones with their value,
+  // and the free ones with their current value and the range in which every check still passes.
+  // Which step depends on which variable is found by moving each variable and seeing which steps change.
+  function annotateCalc() {
+    const els = [...document.querySelectorAll('#calcList .calc-step:not(.calc-check)')];
+    if (!els.length) return;                                    // nothing is fixed: the steps are not shown
+    const key = st => (st.s || '') + '|' + st.r;
+    const dep = els.map(() => []);
+    noFigs = true;
+    try {
+      const base = calcSteps(derive()).map(key);
+      inputs.forEach(inp => {
+        const p = inp.p, cur = P[inp.comp][inp.key];
+        const d = Math.max(p.step, Math.round((p.max - p.min) * 0.1 / p.step) * p.step);
+        const changed = new Set();
+        [cur + d, cur - d].filter(v => v >= p.min && v <= p.max).forEach(v => {
+          P[inp.comp][inp.key] = v;
+          try { calcSteps(derive()).forEach((st, k) => { if (key(st) !== base[k]) changed.add(k); }); } catch (e) { /* skip this trial */ }
+        });
+        P[inp.comp][inp.key] = cur;
+        changed.forEach(k => { if (dep[k]) dep[k].push(inp); });
+      });
+    } catch (e) { /* leave the steps without the list */ }
+    noFigs = false;
+    derive();
+
+    const explained = new Set();
+    const span = r => (r[0] === r[1] ? String(r[0]) : t('rngSpan').replace('{a}', r[0]).replace('{b}', r[1]));
+    els.forEach((el, k) => {
+      const old = el.querySelector('.vars');
+      if (old) old.remove();
+      if (!dep[k].length) return;
+      const chip = inp => {
+        const id = inp.comp + '.' + inp.key, v = P[inp.comp][inp.key];
+        // two parts can have a variable of the same name (a width, a number of teeth): then say whose it is
+        const twin = dep[k].some(o => o !== inp && t('p.' + o.comp + '.' + o.key) === t('p.' + id));
+        const name = (twin ? t('c.' + inp.comp) + ', ' : '') + t('p.' + id);
+        if (locked[inp.comp][inp.key]) return `<span class="var fixed">${name}: <b>${v}</b></span>`;
+        const b = bandOf[id];
+        if (!b || b.any) return `<span class="var">${name}: <b>${v}</b> <i>${t('rngAny')}</i></span>`;
+        if (!b.runs.length) return `<span class="var bad">${name}: <b>${v}</b> <i>${t('rngNone')}</i></span>`;
+        return `<span class="var${b.ok ? '' : ' bad'}">${name}: <b>${v}</b> <i>${t('rngValid').replace('{r}', b.runs.map(span).join(' ; '))}</i></span>`;
+      };
+      const fixedVars = dep[k].filter(i => locked[i.comp][i.key]), freeVars = dep[k].filter(i => !locked[i.comp][i.key]);
+      // a free variable that is out of range gets its reasons: every check that limits it, the values that
+      // check accepts, and the check with today's numbers. Open the first time it appears, folded after that.
+      const why = freeVars.map(inp => {
+        const id = inp.comp + '.' + inp.key, b = bandOf[id];
+        if (!b || b.any || b.ok) return '';
+        const open = explained.has(id) ? '' : ' open';
+        explained.add(id);
+        const lines = b.limits.map(c => `
+          <li class="${c.ok ? 'ok' : 'bad'}"><b>${c.ok ? '✓' : '✗'}</b>
+            <span><button type="button" class="why-link" data-check="${c.id}">${t('k.' + c.id)}</button>:
+            ${t('whyNeeds').replace('{r}', c.runs.map(span).join(' ; '))}
+            ${checkNow[c.id] ? `<small>${t('whyNow')} ${checkNow[c.id]}</small>` : ''}</span></li>`).join('');
+        return `<details class="var-why"${open}><summary>${t('p.' + id)}: <b>${P[inp.comp][inp.key]}</b>, `
+          + `${t(b.runs.length ? 'whyOut' : 'whyNone')}</summary><ul>${lines}</ul></details>`;
+      }).join('');
+      const row = (title, list) => (list.length ? `<div><span class="vars-h">${title}</span>${list.map(chip).join('')}</div>` : '');
+      el.insertAdjacentHTML('beforeend', `<div class="vars">${row(t('varsFixed'), fixedVars)}${row(t('varsFree'), freeVars)}${why}</div>`);
+    });
+  }
+
   const anyLocked = () => inputs.some(i => locked[i.comp][i.key]);
 
   // For every variable that is not fixed, try each value of its slider with everything else as it is now.
   // A value is good when every check that this variable can influence passes. The good stretch is painted
   // on the slider track. Checks that fail whatever this variable is set to are not held against it.
   function updateBands() {
+    bandOf = {};
     const base = runChecks();
+    checkNow = {};
+    try {
+      const g0 = derive(), v0 = vbeltDesign();
+      CHECKS.forEach(c => { try { checkNow[c[0]] = c[2](g0, v0).s; } catch (e) { /* no numbers for this one */ } });
+    } catch (e) { /* keep the list without the current numbers */ }
+    // stretches of consecutive slider values for which `pass` is true
+    const runsOf = (vals, pass) => {
+      const out = [];
+      for (let i = 0; i < vals.length; i++) {
+        if (!pass[i]) continue;
+        let j = i;
+        while (j + 1 < vals.length && pass[j + 1]) j++;
+        out.push([vals[i], vals[j]]);
+        i = j;
+      }
+      return out;
+    };
     renderChecks(base);
     const show = anyLocked();
     const GREEN = C.valid, GREY = C.line;
@@ -2024,13 +2345,13 @@
       P[inp.comp][inp.key] = cur;
 
       const mine = CHECKS.map((c, j) => res.some(r => r[j]) && res.some(r => !r[j]));   // checks this variable can flip
-      if (!mine.some(Boolean)) return;                                                   // it affects no check
+      if (!mine.some(Boolean)) { bandOf[inp.comp + '.' + inp.key] = { any: true }; return; }   // it affects no check
       const good = res.map(r => mine.every((m, j) => !m || r[j]));
       inp.row.classList.toggle('out', !good[vals.indexOf(cur)]);   // current value outside the green: red knob
 
       // contiguous good runs → gradient stops; edges fall halfway between neighbouring samples
       const f = v => (v - p.min) / (p.max - p.min);
-      const parts = [], ranges = [];
+      const parts = [], ranges = [], runs = [];
       let i = 0;
       while (i < vals.length) {
         if (!good[i]) { i++; continue; }
@@ -2038,9 +2359,15 @@
         while (j + 1 < vals.length && good[j + 1]) j++;
         const a = i === 0 ? 0 : f((vals[i - 1] + vals[i]) / 2), b = j === vals.length - 1 ? 1 : f((vals[j] + vals[j + 1]) / 2);
         parts.push(`${GREY} ${stop(a)}, ${GREEN} ${stop(a)}, ${GREEN} ${stop(b)}, ${GREY} ${stop(b)}`);
+        runs.push([vals[i], vals[j]]);
         ranges.push(vals[i] === vals[j] ? String(vals[i]) : t('bandTip').replace('{a}', vals[i]).replace('{b}', vals[j]));
         i = j + 1;
       }
+      // the checks that limit this variable, each with the values it accepts on its own
+      const at = vals.indexOf(cur);
+      const limits = CHECKS.map((c, j) => (mine[j] ? { id: c[0], ok: res[at][j], runs: runsOf(vals, res.map(r => r[j])) } : null))
+        .filter(Boolean).sort((a, b) => a.ok - b.ok);
+      bandOf[inp.comp + '.' + inp.key] = { runs, ok: good[at], limits };
       if (parts.length) {
         inp.range.style.background = `linear-gradient(to right, ${GREY} 0, ${parts.join(', ')}, ${GREY} 100%)`;
         inp.range.title = ranges.join(' ; ');
@@ -2050,6 +2377,7 @@
       }
     });
     derive();   // the trial values moved the shared power / speed globals: put them back
+    annotateCalc();
   }
 
   let bandTimer = 0;
@@ -2131,6 +2459,29 @@
     });
   });
   applyPanels();
+
+  $('#calcList').addEventListener('click', e => {
+    const sym = e.target.closest('.sym[data-var]');
+    if (sym) { goToVariable(sym.dataset.var); return; }
+    const calc = e.target.closest('.sym[data-step]');
+    if (calc) {
+      const step = document.getElementById('step-' + calc.dataset.step);
+      if (step) {
+        step.scrollIntoView({ block: 'center' });
+        step.classList.remove('flash');
+        void step.offsetWidth;
+        step.classList.add('flash');
+      }
+      return;
+    }
+    const btn = e.target.closest('.why-link[data-check]');
+    const item = btn && document.getElementById('check-' + btn.dataset.check);
+    if (!item) return;
+    item.scrollIntoView({ block: 'center' });
+    item.classList.remove('flash');
+    void item.offsetWidth;
+    item.classList.add('flash');
+  });
 
   buildUI();
   applyLang();

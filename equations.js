@@ -1012,6 +1012,76 @@
   EQ.enduranceLimit = (Sut, d, reliabilityPercent, finish) =>
     EQ.marinSurfaceFactor(Sut, finish) * EQ.marinSizeFactor(d) * EQ.marinReliabilityFactor(reliabilityPercent) * EQ.enduranceLimitSteel(Sut);
 
+  // ====================================================================
+  // Inverting any equation
+  // ====================================================================
+  /**
+   * Solve an equation of this file for any one of its arguments.
+   *
+   *   EQ.solveFor('torqueFromPower', [null, 83.78], 47.75)   → the power that gives T = 47.75 at ω = 83.78
+   *   EQ.solveFor(EQ.shaftBendingStress, [1.7, 39100, null], 25)   → the diameter that gives σ = 25
+   *
+   * fn      a function of EQ, or its name
+   * args    its arguments in order, with null in the place of the unknown (exactly one)
+   * target  the value the function has to return
+   * opts    { guess, min, max }: where to start and the allowed range of the unknown (all optional)
+   *
+   * The unknown is found numerically (damped Newton, then a sign-change search with bisection), so the same
+   * function that gives a from b and c also gives b from a and c. It returns NaN when no value reaches the
+   * target. When several values do, it returns the one nearest the guess. Functions that look a value up in
+   * a table by name, or that return something other than a number, cannot be inverted this way.
+   */
+  EQ.solveFor = (fn, args, target, opts) => {
+    const f = typeof fn === 'string' ? EQ[fn] : fn;
+    if (typeof f !== 'function') throw new Error('solveFor: unknown equation ' + fn);
+    const k = args.findIndex(a => a == null);
+    if (k < 0 || args.some((a, i) => a == null && i !== k)) throw new Error('solveFor: exactly one argument must be null');
+    const o = opts || {};
+    const lo = o.min == null ? -Infinity : o.min, hi = o.max == null ? Infinity : o.max;
+    const good = v => typeof v === 'number' && isFinite(v);
+    const g = x => { const a = args.slice(); a[k] = x; try { return f(...a) - target; } catch (err) { return NaN; } };
+    const tol = 1e-10 * (1 + Math.abs(target));
+    const clamp = x => Math.min(hi, Math.max(lo, x));
+
+    // damped Newton from the guess
+    let x = clamp(o.guess == null ? 1 : o.guess), fx = g(x);
+    for (let it = 0; it < 80 && good(fx); it++) {
+      if (Math.abs(fx) <= tol) return x;
+      const h = 1e-6 * (Math.abs(x) + 1e-6);
+      const d = (g(x + h) - fx) / h;
+      if (!good(d) || d === 0) break;
+      let step = fx / d, xn = clamp(x - step), fn2 = g(xn), tries = 0;
+      while ((!good(fn2) || Math.abs(fn2) > Math.abs(fx)) && tries++ < 40) { step /= 2; xn = clamp(x - step); fn2 = g(xn); }
+      if (!good(fn2) || xn === x) break;
+      x = xn; fx = fn2;
+    }
+    if (good(fx) && Math.abs(fx) <= tol) return x;
+
+    // search for a change of sign over many orders of magnitude, nearest the guess first, then bisect
+    const pts = [0];
+    for (let e10 = -9; e10 <= 12; e10 += 0.125) { const v = Math.pow(10, e10); pts.push(v, -v); }
+    const xs = pts.filter(v => v >= lo && v <= hi).sort((p, q) => p - q);
+    if (good(lo)) xs.unshift(lo);
+    if (good(hi)) xs.push(hi);
+    const ref = o.guess == null ? 1 : o.guess;
+    let best = null;
+    for (let i = 0; i + 1 < xs.length; i++) {
+      const fa = g(xs[i]), fb = g(xs[i + 1]);
+      if (!good(fa) || !good(fb) || fa * fb > 0) continue;
+      const dist = Math.abs((xs[i] + xs[i + 1]) / 2 - ref);
+      if (!best || dist < best.dist) best = { a: xs[i], b: xs[i + 1], fa, dist };
+    }
+    if (!best) return NaN;
+    let a = best.a, b = best.b, fa = best.fa;
+    for (let it = 0; it < 200; it++) {
+      const m = (a + b) / 2, fm = g(m);
+      if (!good(fm)) return NaN;
+      if (Math.abs(fm) <= tol || Math.abs(b - a) <= 1e-13 * (1 + Math.abs(m))) return m;
+      if (fa * fm <= 0) b = m; else { a = m; fa = fm; }
+    }
+    return (a + b) / 2;
+  };
+
   // ---- export ----
   root.EQ = EQ;
   if (typeof module !== 'undefined' && module.exports) module.exports = EQ;
