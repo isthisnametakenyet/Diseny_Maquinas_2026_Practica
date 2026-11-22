@@ -1875,6 +1875,7 @@
     const drive = new THREE.Group();     // pinion (counter-rotating about its own axis)
     root.add(spin, fixed, drive);
     let pinionMesh = null;
+    let gearPitch = 0.1;                 // angle between two teeth of gear B, rad
     let drivenMesh = null;               // driven pulley of the V-belt drive
     let beltRun = null;                  // belts and the marks that travel along them
     const markPos = new THREE.Vector3(), markObj = new THREE.Object3D();
@@ -2028,6 +2029,7 @@
       pinionMesh = null;
       drivenMesh = null;
       beltRun = null;
+      gearPitch = 2 * Math.PI / g.gear.z;
 
       if (visible.pinion) {
         const pn = g.pinion;
@@ -2238,7 +2240,18 @@
     renderer.setAnimationLoop(() => {
       const dt = clock.getDelta();
       // the real angular speed of the shaft, slowed 50 times so the teeth can be followed, times the speed chosen
-      if (opts.spin) spin.rotation.y += dt * (SPEED_RPM * 2 * Math.PI / 60) / 50 * animSpeed;
+      if (opts.spin) {
+        let step = dt * (SPEED_RPM * 2 * Math.PI / 60) / 50 * animSpeed;
+        // A screen shows separate frames. If a tooth moved more than half the way to the next tooth between
+        // two frames, the eye would pair it with the wrong tooth and the gear would seem to turn backwards
+        // (the wagon wheel effect). The marks on the belt repeat too. So the step of one frame is held under
+        // 0.4 of the smallest repeat: the speed still grows with the shaft speed, then levels off.
+        let repeat = gearPitch;
+        if (beltRun) repeat = Math.min(repeat, beltRun.len / beltRun.per / beltRun.r1);
+        const limit = 0.4 * repeat;
+        step = limit * Math.tanh(step / limit);
+        spin.rotation.y += step;
+      }
       if (pinionMesh) {                                // keep the teeth in mesh with gear B
         const u = pinionMesh.userData;
         pinionMesh.rotation.y = -(spin.rotation.y - Math.PI + 0.5 * u.pitchG) * u.ratio;
